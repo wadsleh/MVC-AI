@@ -29,5 +29,5 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = "https://ai-voice-chat-bd3z.onrender.com";
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
