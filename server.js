@@ -29,5 +29,4 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-const PORT = process.env.MURTADA;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
