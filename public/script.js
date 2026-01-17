@@ -64,7 +64,13 @@ function addMessage(text, sender) {
 
 // 3. نطق النص (Text-to-Speech)
 function speak(text) {
+    // 1. إيقاف أي كلام قديم فوراً (الحل لمشكلتك)
+    window.speechSynthesis.cancel();
+
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ar-SA';
+    utterance.lang = "ar-SA"; // ضبط اللغة عربية
+    utterance.rate = 1.0;     // سرعة طبيعية
+
+    // تشغيل الكلام الجديد
     window.speechSynthesis.speak(utterance);
 }
