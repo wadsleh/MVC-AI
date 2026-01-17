@@ -30,13 +30,13 @@
 
         /* --- الهيدر --- */
         header {
-            padding: 15px 20px;
+            padding: 15px 15px; /* هوامش مريحة */
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .brand-container { display: flex; align-items: center; gap: 10px; }
+        .brand-container { display: flex; align-items: center; gap: 8px; }
 
         .app-logo { 
             height: 45px; 
@@ -48,24 +48,39 @@
 
         .brand-name { font-size: 1.2rem; font-weight: 600; color: #E3E3E3; letter-spacing: 0.5px; }
 
-        /* زر اللغة في الهيدر (بديل الأفاتار) */
-        #langBtnHeader {
-            background: rgba(255, 255, 255, 0.1); /* خلفية شفافة بسيطة */
-            color: #E3E3E3;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
+        /* حاوية عناصر اليمين في الهيدر (اللغة + الأفاتار) */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* زر اللغة في الهيدر */
+        #langBtn {
+            background: #1E1F20; 
+            color: #E3E3E3; 
+            border: 1px solid #333; 
+            padding: 5px 12px;
+            border-radius: 15px; 
+            font-size: 0.85rem; 
+            font-weight: bold; 
             cursor: pointer;
+            min-width: 40px; 
+            text-align: center;
             transition: 0.2s;
         }
-        #langBtnHeader:hover { background: rgba(255, 255, 255, 0.2); }
+        #langBtn:hover { background: #333; }
+
+        .user-avatar { 
+            width: 35px; height: 35px; background: #FF8A65; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; font-weight: bold; color: #3E2723;
+        }
 
         /* --- شاشة الترحيب --- */
         #welcome-screen {
             flex: 1; display: flex; flex-direction: column; justify-content: center;
-            padding: 25px; padding-bottom: 120px;
+            padding: 20px; padding-bottom: 120px;
         }
 
         .greeting-hi { font-size: 3.5rem; font-weight: 500; color: white; line-height: 1.1; }
@@ -107,5 +122,303 @@
             padding: 12px 20px; border-radius: 20px 20px 20px 4px;
         }
         .bot-message {
-            align
- 
+            align-self: flex-start; background: transparent; color: #E3E3E3;
+            padding: 0; padding-left: 15px;
+        }
+        .bot-message::before { content: '✨'; display: inline-block; margin-left: 8px; }
+        .chat-image { max-width: 100%; border-radius: 12px; margin-top: 10px; border: 1px solid #444; }
+        .bot-message code { background: #2D2E30; padding: 2px 5px; border-radius: 4px; color: #A8C7FA; font-family: monospace; }
+
+        /* --- صندوق المعاينة --- */
+        #preview-container {
+            position: fixed; bottom: 90px; left: 20px;
+            background: #2C2C2E; padding: 10px; border-radius: 12px;
+            display: none; z-index: 1001; border: 1px solid #444;
+            color: #fff;
+        }
+        #preview-image { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; display: none; }
+        #file-icon { font-size: 2rem; color: #A8C7FA; margin-right: 10px; display: none; }
+        #remove-file {
+            position: absolute; top: -8px; right: -8px;
+            background: #ff4d4d; color: white; border-radius: 50%;
+            width: 22px; height: 22px; text-align: center; line-height: 22px;
+            cursor: pointer; font-size: 14px; border: 2px solid #2C2C2E;
+        }
+
+        /* --- شريط الإدخال (تم تنظيفه) --- */
+        #input-area {
+            position: fixed; bottom: 20px; left: 15px; right: 15px;
+            background-color: #1E1F20; border-radius: 35px;
+            
+            /* حشو متوازن الآن لأننا أزلنا زر اللغة */
+            padding: 8px 15px; 
+            
+            display: flex; align-items: center; gap: 8px; z-index: 1000;
+            min-height: 60px;
+        }
+
+        /* زر الرفع (أقصى اليسار) */
+        .attach-btn {
+            background: transparent; border: none; color: #C4C7C5; 
+            font-size: 1.3rem; cursor: pointer; padding: 8px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .attach-btn:hover { color: #fff; }
+
+        #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1.1rem; padding: 5px 10px; outline: none; }
+        
+        /* مجموعة اليمين (المايك فقط الآن) */
+        .right-controls { display: flex; align-items: center; gap: 5px; }
+
+        .icon-btn { 
+            width: 45px; height: 45px; 
+            border-radius: 50%; border: none; background: transparent; 
+            color: white; font-size: 1.4rem; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        
+        #micBtn { 
+            background: transparent; 
+            width: 48px; height: 48px; 
+            justify-content: center;
+        }
+        #micBtn:active { background: rgba(255,255,255,0.1); }
+        #micBtn.recording { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border-radius: 50%; }
+        
+        #sendBtn { display: none; color: #A8C7FA; width: 48px; height: 48px; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-container">
+            <img src="images/logo.png" alt="MVC AI" class="app-logo" onerror="this.style.display='none'">
+            <div class="brand-name">MVC AI</div>
+        </div>
+        
+        <div class="header-right">
+            <button id="langBtn">AR</button>
+            <div class="user-avatar">F</div>
+        </div>
+    </header>
+
+    <div id="chat-container">
+        <div id="welcome-content" class="welcome-message">
+            <div class="greeting-hi">Hi <span class="greeting-name">Friend</span></div>
+            <div class="greeting-sub">Where should we start?</div>
+            
+            <div class="suggestions">
+                <div class="chip" onclick="sendMessage('Create a creative image description')">
+                    <i class="fas fa-image icon-yellow"></i> Create image
+                </div>
+                <div class="chip" onclick="sendMessage('Write a creative story')">
+                    <i class="fas fa-file-alt icon-green"></i> Write anything
+                </div>
+                <div class="chip" onclick="sendMessage('Help me learn something new')">
+                    <i class="fas fa-book icon-red"></i> Help me learn
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="preview-container">
+        <span id="remove-file">×</span>
+        <img id="preview-image" src="" alt="preview">
+        <i id="file-icon" class="fas fa-file-alt"></i>
+        <span id="file-name" style="margin-left:5px;"></span>
+    </div>
+
+    <div id="input-area">
+        <button class="attach-btn" id="fileBtn"><i class="fas fa-paperclip"></i></button>
+        <input type="file" id="fileInput" accept="image/*, .txt, .js, .py, .html, .css, .json, .md" style="display: none;">
+
+        <input type="text" id="textInput" placeholder="Ask MVC AI" autocomplete="off">
+        
+        <div class="right-controls">
+            <button class="icon-btn" id="micBtn"><i class="fas fa-microphone"></i></button>
+            <button class="icon-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const welcomeContent = document.getElementById('welcome-content');
+        const textInput = document.getElementById('textInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const micBtn = document.getElementById('micBtn');
+        const langBtn = document.getElementById('langBtn');
+        const fileBtn = document.getElementById('fileBtn');
+        const fileInput = document.getElementById('fileInput');
+        
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+        const fileIcon = document.getElementById('file-icon');
+        const fileNameSpan = document.getElementById('file-name');
+        const removeFileBtn = document.getElementById('remove-file');
+
+        let isFirstMessage = true;
+        let currentLang = 'en-US';
+        let currentImageBase64 = null;
+        let currentFileContent = null;
+        let currentFileName = null;
+
+        fileBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            currentFileName = file.name;
+
+            if (file.type.startsWith('image/')) {
+                reader.onload = (event) => {
+                    currentImageBase64 = event.target.result;
+                    currentFileContent = null;
+                    previewImage.src = currentImageBase64;
+                    previewImage.style.display = 'block';
+                    fileIcon.style.display = 'none';
+                    fileNameSpan.textContent = "";
+                    showPreview();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                reader.onload = (event) => {
+                    currentFileContent = event.target.result;
+                    currentImageBase64 = null;
+                    previewImage.style.display = 'none';
+                    fileIcon.style.display = 'inline-block';
+                    fileNameSpan.textContent = file.name.substring(0, 15) + "..";
+                    showPreview();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function showPreview() {
+            previewContainer.style.display = 'flex';
+            previewContainer.style.alignItems = 'center';
+            micBtn.style.display = 'none'; sendBtn.style.display = 'flex';
+        }
+
+        removeFileBtn.addEventListener('click', () => {
+            currentImageBase64 = null;
+            currentFileContent = null;
+            fileInput.value = "";
+            previewContainer.style.display = 'none';
+            if (textInput.value.trim().length === 0) {
+                micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
+            }
+        });
+
+        langBtn.addEventListener('click', () => {
+            if (currentLang === 'en-US') {
+                currentLang = 'ar-SA'; langBtn.textContent = 'EN';
+                textInput.placeholder = "اسأل MVC AI..."; textInput.dir = "rtl";
+            } else {
+                currentLang = 'en-US'; langBtn.textContent = 'AR';
+                textInput.placeholder = "Ask MVC AI..."; textInput.dir = "ltr";
+            }
+        });
+
+        textInput.addEventListener('input', () => {
+            if (textInput.value.trim().length > 0 || currentImageBase64 || currentFileContent) {
+                micBtn.style.display = 'none'; sendBtn.style.display = 'flex';
+            } else {
+                micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
+            }
+        });
+
+        function hideWelcome() {
+            if (isFirstMessage && welcomeContent) {
+                welcomeContent.style.display = 'none';
+                isFirstMessage = false;
+            }
+        }
+
+        async function sendMessage(text) {
+            if (!text && !currentImageBase64 && !currentFileContent) return;
+            hideWelcome();
+
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('message', 'user-message');
+            let displayText = text;
+            if (currentFileContent) displayText = text + `\n📄 [File: ${currentFileName}]`;
+            userDiv.textContent = displayText;
+
+            if (currentImageBase64) {
+                const img = document.createElement('img');
+                img.src = currentImageBase64;
+                img.classList.add('chat-image');
+                userDiv.appendChild(img);
+            }
+            
+            chatContainer.appendChild(userDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            let finalMessage = text;
+            if (currentFileContent) finalMessage = (text || "Analyze this file:") + "\n\nFile Content:\n" + currentFileContent;
+
+            const payload = { message: finalMessage, image: currentImageBase64, language: currentLang };
+
+            textInput.value = '';
+            currentImageBase64 = null;
+            currentFileContent = null;
+            previewContainer.style.display = 'none';
+            fileInput.value = '';
+            micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                
+                const botDiv = document.createElement('div');
+                botDiv.classList.add('message', 'bot-message');
+                botDiv.innerHTML = marked.parse(data.reply);
+                chatContainer.appendChild(botDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                speak(data.reply);
+
+            } catch (error) {
+                const errDiv = document.createElement('div');
+                errDiv.classList.add('message', 'bot-message');
+                errDiv.textContent = "Error.";
+                chatContainer.appendChild(errDiv);
+            }
+        }
+
+        sendBtn.addEventListener('click', () => sendMessage(textInput.value));
+        textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(textInput.value); });
+
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        
+        micBtn.addEventListener('click', () => {
+            recognition.lang = currentLang;
+            window.speechSynthesis.cancel();
+            if (micBtn.classList.contains('recording')) recognition.stop();
+            else recognition.start();
+        });
+
+        recognition.onstart = () => micBtn.classList.add('recording');
+        recognition.onend = () => micBtn.classList.remove('recording');
+        recognition.onresult = (e) => {
+            const transcript = e.results[0][0].transcript;
+            textInput.value = transcript;
+            sendMessage(transcript);
+        };
+
+        function speak(text) {
+            window.speechSynthesis.cancel(); 
+            const cleanText = text.replace(/[*#`_]/g, '');
+            const u = new SpeechSynthesisUtterance(cleanText);
+            u.lang = currentLang;
+            window.speechSynthesis.speak(u);
+        }
+    </script>
+</body>
+</html>
