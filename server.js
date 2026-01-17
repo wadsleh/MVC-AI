@@ -4,17 +4,28 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+
+// ⚠️ زيادة سعة البيانات لاستقبال الصور (مهم جداً لرفع الملفات)
+app.use(express.json({ limit: '50mb' }));
 app.use(express.static('public'));
 
-// جلب المفتاح من متغيرات البيئة (اسم المفتاح الذي وضعته في Render)
 const GROQ_API_KEY = process.env.MURTA;
 
 app.post('/api/chat', async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, image } = req.body; // نستقبل الرسالة + الصورة (إن وجدت)
 
-    // الاتصال بموديل Groq
+    // إعداد محتوى الرسالة
+    let userContent = [{ type: "text", text: message }];
+
+    // إذا وجدنا صورة، نضيفها للطلب
+    if (image) {
+        userContent.push({
+            type: "image_url",
+            image_url: { url: image } // الصورة تكون بصيغة Base64
+        });
+    }
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -23,31 +34,31 @@ app.post('/api/chat', async (req, res) => {
         },
         body: JSON.stringify({
             messages: [
-                // توجيه ذكي: الموديل سيرد بنفس لغة المستخدم
                 { 
                     role: "system", 
-                    content: "You are a helpful and smart AI assistant like Gemini. You are versatile and can speak all languages. Always reply in the same language the user is speaking to you. Keep your answers concise." 
+                    content: "You are MVC AI, a helpful assistant created by Murtada. You can see images and understand text. Always reply in the same language the user uses." 
                 },
-                { role: "user", content: message }
+                { 
+                    role: "user", 
+                    content: userContent 
+                }
             ],
-            // استخدام أحدث وأذكى موديل متاح حالياً
-            model: "llama-3.3-70b-versatile",
+            // ⚠️ استخدام موديل يدعم الرؤية (Vision)
+            model: "llama-3.2-90b-vision-preview", 
             temperature: 0.7
         })
     });
 
     const data = await response.json();
 
-    if (data.error) {
-        throw new Error(data.error.message);
-    }
+    if (data.error) throw new Error(data.error.message);
 
     const replyText = data.choices[0].message.content;
     res.json({ reply: replyText });
 
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ reply: "حدث خطأ في الاتصال بالسيرفر." });
+    res.status(500).json({ reply: "حدث خطأ في معالجة الملف أو الاتصال." });
   }
 });
 
