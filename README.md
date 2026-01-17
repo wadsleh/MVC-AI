@@ -20,5 +20,5 @@ An intelligent chat application that supports Voice-to-Voice interaction powered
 
 ## 🚀 طريقة التشغيل | How to Run
 
-1. **نسخ المشروع (Clone):**
+1. اضغط على الرابط:
    https://ai-voice-chat-bd3z.onrender.com
