@@ -1,31 +1,54 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// ⚠️ ضع مفتاحك هنا مباشرة بين علامات التنصيص
-const genAI = new GoogleGenerativeAI("AIzaSyDbt5_tRRfc4Rc8XhR1gttirdqz5h-fWeY");
+// استدعاء المفتاح من متغيرات البيئة الآمنة
+const HF_TOKEN = process.env.HF_TOKEN;
+
+
+// سنستخدم موديل Qwen لأنه ممتاز في العربية
+const MODEL_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct";
 
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
-    const result = await model.generateContent(message);
-    const response = await result.response;
-    const text = response.text();
 
-    res.json({ reply: text });
+    const response = await fetch(MODEL_URL, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${HF_TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            inputs: message,
+            parameters: { 
+                max_new_tokens: 500, // طول الرد
+                return_full_text: false,
+                temperature: 0.7 
+            }
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`HF API Error: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    // استخراج النص من رد Hugging Face
+    const replyText = result[0].generated_text;
+
+    res.json({ reply: replyText });
+
   } catch (error) {
-    console.error("Error causing crash:", error); // طباعة الخطأ في السجلات
-    res.status(500).json({ error: "خطأ في الاتصال بالذكاء الاصطناعي" });
+    console.error("Error:", error);
+    res.status(500).json({ reply: "حدث خطأ في الاتصال، حاول مرة أخرى." });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-// الحل لمشكلة الشبكة: إضافة '0.0.0.0'
 app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
