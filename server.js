@@ -5,27 +5,28 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 
-// ⚠️ زيادة سعة البيانات لاستقبال الصور (مهم جداً لرفع الملفات)
+// ⚠️ مهم جداً: زيادة سعة البيانات لاستقبال الصور الكبيرة (Base64)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static('public'));
 
+// جلب المفتاح من متغيرات البيئة (حسب تسميتك في Render)
 const GROQ_API_KEY = process.env.MURTA;
 
 app.post('/api/chat', async (req, res) => {
   try {
-    const { message, image } = req.body; // نستقبل الرسالة + الصورة (إن وجدت)
-
-    // إعداد محتوى الرسالة
+    const { message, image } = req.body;
+    
+    // تجهيز محتوى الرسالة (نص + صورة إن وجدت)
     let userContent = [{ type: "text", text: message }];
-
-    // إذا وجدنا صورة، نضيفها للطلب
+    
     if (image) {
         userContent.push({
             type: "image_url",
-            image_url: { url: image } // الصورة تكون بصيغة Base64
+            image_url: { url: image } // الصورة تأتي بصيغة Base64
         });
     }
 
+    // الاتصال بـ Groq
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -36,29 +37,31 @@ app.post('/api/chat', async (req, res) => {
             messages: [
                 { 
                     role: "system", 
-                    content: "You are MVC AI, a helpful assistant created by Murtada. You can see images and understand text. Always reply in the same language the user uses." 
+                    content: "You are MVC AI, a helpful and smart assistant. Reply in the same language the user uses." 
                 },
                 { 
                     role: "user", 
                     content: userContent 
                 }
             ],
-            // موديل الرؤية الجديد (11 مليار بارامتر) - سريع جداً ويدعم الصور
-model: "llama-3.2-11b-vision-preview",
+            // ⚠️ استخدام موديل الرؤية الجديد والسريع (لتفادي أخطاء Decommissioned)
+            model: "llama-3.2-11b-vision-preview",
             temperature: 0.7
         })
     });
 
     const data = await response.json();
 
-    if (data.error) throw new Error(data.error.message);
-
-    const replyText = data.choices[0].message.content;
-    res.json({ reply: replyText });
+    if (data.error) {
+        throw new Error(data.error.message);
+    }
+    
+    // إرسال الرد للواجهة
+    res.json({ reply: data.choices[0].message.content });
 
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ reply: "حدث خطأ في معالجة الملف أو الاتصال." });
+    console.error("Server Error:", error);
+    res.status(500).json({ reply: "آسف، حدث خطأ في النظام أو الموديل مشغول حالياً." });
   }
 });
 
