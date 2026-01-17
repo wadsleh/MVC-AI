@@ -4,7 +4,8 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '50mb' })); // زيادة الحد المسموح لرفع الصور
+// ✅ ضروري جداً: زيادة حجم البيانات المسموح بها لاستقبال الصور
+app.use(express.json({ limit: '50mb' })); 
 app.use(express.static('public'));
 
 const GROQ_API_KEY = process.env.MURTA;
@@ -13,26 +14,32 @@ app.post('/api/chat', async (req, res) => {
   const { message, image, language } = req.body;
 
   try {
-    let messagesContent = [];
+    let userContent = [];
+    
+    // إذا كان هناك نص (أو محتوى ملف نصي تم دمجه في الرسالة)
+    if (message) {
+        userContent.push({ type: "text", text: message });
+    } else {
+        // إذا رفع صورة بدون كلام، نضع نصاً افتراضياً ليقوم الموديل بالشرح
+        userContent.push({ type: "text", text: "Describe this content / اشرح هذا المحتوى" });
+    }
+
+    // تحديد الموديل المناسب
     let selectedModel = "llama-3.3-70b-versatile"; // الموديل الافتراضي للنصوص
 
-    // إعداد رسالة النظام حسب اللغة
-    const systemInstruction = language === 'ar-SA' 
-        ? "أنت MVC AI، مساعد ذكي. رد باللغة العربية دائماً. إذا تم إرسال صورة، قم بتحليلها ووصفها بدقة."
-        : "You are MVC AI, a smart assistant. Reply in English. If an image is provided, analyze and describe it.";
-
-    // تجهيز محتوى الرسالة
-    let userContent = [{ type: "text", text: message || "Describe this image" }];
-
-    // ✅ إذا وجدنا صورة، نغير الموديل إلى موديل الرؤية ونضيف الصورة
+    // ✅ إذا تم إرسال صورة، نستخدم موديل الرؤية (Vision)
     if (image) {
         userContent.push({
             type: "image_url",
             image_url: { url: image }
         });
-        // استخدام موديل Vision القوي
         selectedModel = "llama-3.2-90b-vision-preview"; 
     }
+
+    // تعليمات النظام
+    const systemInstruction = language === 'ar-SA' 
+        ? "أنت MVC AI، مساعد ذكي. رد باللغة العربية. إذا أرسل المستخدم كوداً أو صورة، قم بتحليلها وشرحها."
+        : "You are MVC AI. Reply in English. Analyze any images or code provided.";
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -52,17 +59,12 @@ app.post('/api/chat', async (req, res) => {
 
     const data = await response.json();
     
-    // معالجة الأخطاء المحتملة من Groq
-    if (data.error) {
-        console.error("Groq Error:", data.error);
-        throw new Error(data.error.message);
-    }
-    
+    if (data.error) throw new Error(data.error.message);
     res.json({ reply: data.choices[0].message.content });
 
   } catch (error) {
     console.error("Server Error:", error);
-    res.status(500).json({ reply: "عذراً، حدث خطأ أثناء معالجة الطلب (أو أن موديل الصور مشغول حالياً)." });
+    res.status(500).json({ reply: "عذراً، حدث خطأ أثناء المعالجة (تأكد أن حجم الصورة ليس ضخماً جداً)." });
   }
 });
 
