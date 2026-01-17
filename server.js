@@ -7,46 +7,43 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// استدعاء المفتاح من متغيرات البيئة الآمنة
-const HF_TOKEN = process.env.HF_TOKEN;
-
-// موديل Qwen الخفيف (1.5B) - يعمل دائماً وسريع جداً في الرد
-const MODEL_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-1.5B-Instruct";
-
+// ⚠️ ضع مفتاح Groq الجديد هنا (يبدأ بـ gsk_)
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
 
-    const response = await fetch(MODEL_URL, {
+    // الاتصال بسيرفرات Groq
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${HF_TOKEN}`,
+            "Authorization": `Bearer ${GROQ_API_KEY}`,
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            inputs: message,
-            parameters: { 
-                max_new_tokens: 500, // طول الرد
-                return_full_text: false,
-                temperature: 0.7 
-            }
+            messages: [
+                { role: "system", content: "You are a helpful assistant. Always reply in Arabic." },
+                { role: "user", content: message }
+            ],
+            // موديل Llama 3 السريع جداً
+            model: "llama3-8b-8192",
+            temperature: 0.7
         })
     });
 
-    if (!response.ok) {
-        throw new Error(`HF API Error: ${response.statusText}`);
+    const data = await response.json();
+
+    if (data.error) {
+        throw new Error(data.error.message);
     }
 
-    const result = await response.json();
-    // استخراج النص من رد Hugging Face
-    const replyText = result[0].generated_text;
-
+    const replyText = data.choices[0].message.content;
     res.json({ reply: replyText });
 
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ reply: "حدث خطأ في الاتصال، حاول مرة أخرى." });
+    res.status(500).json({ reply: "حدث خطأ في الخادم." });
   }
 });
 
