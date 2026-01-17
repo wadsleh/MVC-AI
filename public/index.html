@@ -28,7 +28,7 @@
             overscroll-behavior: none;
         }
 
-        /* --- الهيدر (أقصى اليسار) --- */
+        /* --- الهيدر --- */
         header {
             padding: 15px 10px; 
             display: flex;
@@ -113,43 +113,83 @@
             cursor: pointer; font-size: 14px; border: 2px solid #2C2C2E;
         }
 
-        /* --- شريط الإدخال --- */
+        /* --- شريط الإدخال (تصميم Gemini الدقيق) --- */
         #input-area {
             position: fixed; bottom: 20px; left: 15px; right: 15px;
-            background-color: #1E1F20; border-radius: 35px;
-            padding: 8px 10px; 
-            display: flex; align-items: center; gap: 8px; z-index: 1000;
+            background-color: #1E1F20; 
+            border-radius: 35px; /* كبسولة كاملة */
+            
+            /* حشو متوازن ليسمح للمايك بالتنفس */
+            padding: 8px 15px 8px 15px; 
+            
+            display: flex; align-items: center; gap: 5px; z-index: 1000;
             min-height: 60px;
+            border: 1px solid rgba(255,255,255,0.05); /* حدود خفيفة جداً */
         }
 
+        /* زر اللغة (يسار) */
         #langBtn {
-            background: #333; color: #fff; border: 1px solid #555; padding: 8px 12px;
+            background: #333; color: #fff; border: none; padding: 8px 14px;
             border-radius: 20px; font-size: 0.9rem; font-weight: bold; cursor: pointer;
-            min-width: 50px; text-align: center;
+            min-width: 45px; text-align: center;
         }
         
         .attach-btn {
             background: transparent; border: none; color: #C4C7C5; 
-            font-size: 1.3rem; cursor: pointer; padding: 5px;
+            font-size: 1.4rem; cursor: pointer; padding: 8px;
             display: flex; align-items: center; justify-content: center;
         }
+        .attach-btn:hover { color: #fff; }
 
-        #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1.1rem; padding: 5px; outline: none; }
+        #textInput { 
+            flex: 1; 
+            background: transparent; 
+            border: none; 
+            color: white; 
+            font-size: 1.1rem; 
+            padding: 5px 10px; 
+            outline: none; 
+        }
         
-        /* مجموعة اليمين */
-        .right-controls { display: flex; align-items: center; gap: 5px; margin-right: 5px; }
+        /* --- المايك (النسخة الأصلية) --- */
+        /* تجميع أزرار اليمين */
+        .right-controls {
+            display: flex;
+            align-items: center;
+            padding-right: 5px; /* مسافة بسيطة من الحافة */
+        }
 
         .icon-btn { 
-            width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; 
-            color: white; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer;
+            width: 48px; height: 48px; /* حجم كبير للمس */
+            border-radius: 50%; border: none; 
+            background: transparent; /* خلفية شفافة لدمجها مع الشريط */
+            color: white; font-size: 1.4rem; /* أيقونة كبيرة */
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: 0.2s;
         }
         
+        /* المايك بدون خلفية غامقة (مثل Gemini) */
         #micBtn { 
-            background: #2C2C2E; width: 48px; height: 48px; 
-            border-radius: 50%; justify-content: center;
+            background: transparent; 
         }
-        #micBtn.recording { color: #ff4d4d; }
-        #sendBtn { display: none; color: #A8C7FA; width: 48px; height: 48px; }
+        
+        #micBtn:active { background: rgba(255,255,255,0.1); }
+        
+        /* عند التسجيل: يظهر بلون مميز */
+        #micBtn.recording { 
+            color: #ff4d4d; 
+            background: rgba(255, 77, 77, 0.1);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* زر الإرسال */
+        #sendBtn { 
+            display: none; 
+            color: #A8C7FA; 
+            transform: rotate(0deg); 
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
     </style>
 </head>
@@ -221,11 +261,11 @@
         let isFirstMessage = true;
         let currentLang = 'en-US';
         
-        let currentImageBase64 = null; // للصور
-        let currentFileContent = null; // للملفات النصية
+        let currentImageBase64 = null;
+        let currentFileContent = null;
         let currentFileName = null;
 
-        // --- إدارة الملفات (صور ونصوص) ---
+        // --- إدارة الملفات ---
         fileBtn.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', (e) => {
@@ -235,33 +275,24 @@
             const reader = new FileReader();
             currentFileName = file.name;
 
-            // إذا كان الملف صورة
             if (file.type.startsWith('image/')) {
                 reader.onload = (event) => {
                     currentImageBase64 = event.target.result;
-                    currentFileContent = null; // تفريغ النص
-
-                    // عرض المعاينة
+                    currentFileContent = null;
                     previewImage.src = currentImageBase64;
                     previewImage.style.display = 'block';
                     fileIcon.style.display = 'none';
                     fileNameSpan.textContent = "";
-                    
                     showPreview();
                 };
                 reader.readAsDataURL(file);
-            } 
-            // إذا كان ملفاً نصياً (كود أو تكست)
-            else {
+            } else {
                 reader.onload = (event) => {
-                    currentFileContent = event.target.result; // قراءة النص
-                    currentImageBase64 = null; // تفريغ الصورة
-
-                    // عرض المعاينة كأيقونة
+                    currentFileContent = event.target.result;
+                    currentImageBase64 = null;
                     previewImage.style.display = 'none';
                     fileIcon.style.display = 'inline-block';
                     fileNameSpan.textContent = file.name.substring(0, 15) + "..";
-                    
                     showPreview();
                 };
                 reader.readAsText(file);
@@ -284,7 +315,7 @@
             }
         });
 
-        // --- باقي الكود ---
+        // --- تبديل اللغة ---
         langBtn.addEventListener('click', () => {
             if (currentLang === 'en-US') {
                 currentLang = 'ar-SA'; langBtn.textContent = 'EN';
@@ -317,14 +348,12 @@
             const userDiv = document.createElement('div');
             userDiv.classList.add('message', 'user-message');
             
-            // عرض النص
             let displayText = text;
             if (currentFileContent) {
                 displayText = text + `\n📄 [File: ${currentFileName}]`;
             }
             userDiv.textContent = displayText;
 
-            // عرض الصورة
             if (currentImageBase64) {
                 const img = document.createElement('img');
                 img.src = currentImageBase64;
@@ -335,7 +364,6 @@
             chatContainer.appendChild(userDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // دمج محتوى الملف النصي مع الرسالة المرسلة للسيرفر
             let finalMessage = text;
             if (currentFileContent) {
                 finalMessage = (text || "Analyze this file:") + "\n\nFile Content:\n" + currentFileContent;
@@ -347,7 +375,6 @@
                 language: currentLang 
             };
 
-            // تنظيف
             textInput.value = '';
             currentImageBase64 = null;
             currentFileContent = null;
@@ -391,8 +418,8 @@
             else recognition.start();
         });
 
-        recognition.onstart = () => micBtn.style.color = '#ff4d4d';
-        recognition.onend = () => micBtn.style.color = 'white';
+        recognition.onstart = () => micBtn.classList.add('recording');
+        recognition.onend = () => micBtn.classList.remove('recording');
         recognition.onresult = (e) => {
             const transcript = e.results[0][0].transcript;
             textInput.value = transcript;
@@ -409,4 +436,3 @@
     </script>
 </body>
 </html>
- 
