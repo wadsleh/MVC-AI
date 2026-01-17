@@ -11,8 +11,8 @@ app.use(express.static('public'));
 const HF_TOKEN = process.env.HF_TOKEN;
 
 
-// استخدام موديل Mistral المستقر جداً
-const MODEL_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3";
+// موديل Zephyr: سريع، ذكي، ومجاني دائماً
+const MODEL_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta";
 
 app.post('/api/chat', async (req, res) => {
   try {
