@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // ⚠️ ضع مفتاح Groq الجديد هنا (يبدأ بـ gsk_)
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_API_KEY = process.env.MURTA;
 
 // هذا السطر سيطبع في الـ Logs هل المفتاح موجود أم لا
 console.log("Is Key Loaded?", GROQ_API_KEY ? "YES ✅" : "NO ❌");
