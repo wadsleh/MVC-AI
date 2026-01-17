@@ -10,15 +10,17 @@ app.use(express.static('public'));
 const GROQ_API_KEY = process.env.MURTA;
 
 app.post('/api/chat', async (req, res) => {
-  const { message, image } = req.body;
+  // نستقبل اللغة المختارة من الواجهة
+  const { message, image, language } = req.body;
 
   try {
     let userContent = [{ type: "text", text: message }];
     
-    // ملاحظة: موديلات الصور في Groq غير مستقرة حالياً
-    // سنعتمد على أقوى موديل نصوص لضمان عمل التطبيق دون توقف
-    // ونضيف تعليمات صارمة لفهم اللغة
-    
+    // تحديد تعليمات النظام بناءً على الزر الذي ضغطته
+    const systemInstruction = language === 'ar-SA' 
+        ? "أنت MVC AI، مساعد ذكي ومحترف. يجب أن ترد باللغة العربية دائماً وبشكل واضح ومفيد."
+        : "You are MVC AI, a smart and professional assistant. You must reply in English.";
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -27,21 +29,16 @@ app.post('/api/chat', async (req, res) => {
         },
         body: JSON.stringify({
             messages: [
-                { 
-                    role: "system", 
-                    // ⚠️ هذا السطر هو السر لجعل البوت يفهم كل اللغات
-                    content: "You are a helpful and smart AI assistant. You must reply in the EXACT SAME LANGUAGE the user speaks. If they speak Arabic, reply in Arabic. If English, reply in English." 
-                },
+                { role: "system", content: systemInstruction },
                 { role: "user", content: userContent }
             ],
-            // ✅ الموديل الجوكر: قوي، سريع، ويدعم العربية بطلاقة
+            // نستخدم الموديل الجوكر المستقر والقوي جداً في اللغات
             model: "llama-3.3-70b-versatile",
             temperature: 0.7
         })
     });
 
     const data = await response.json();
-
     if (data.error) throw new Error(data.error.message);
     
     res.json({ reply: data.choices[0].message.content });
