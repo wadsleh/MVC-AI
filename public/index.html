@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini Clone</title>
+    <title>MVC AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Cairo:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
         :root {
-            --bg-color: #000000; /* أسود كامل مثل الصورة */
+            --bg-color: #000000;
             --surface-color: #1E1F20;
             --text-primary: #E3E3E3;
             --text-secondary: #C4C7C5; 
@@ -20,7 +20,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-primary);
-            font-family: 'Roboto', 'Cairo', sans-serif;
+            font-family: 'Cairo', 'Roboto', sans-serif; /* الأولوية للخط العربي */
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -28,7 +28,7 @@
             overscroll-behavior: none;
         }
 
-        /* --- الهيدر --- */
+        /* --- الهيدر (MVC AI + Logo) --- */
         header {
             padding: 20px 25px;
             display: flex;
@@ -36,17 +36,35 @@
             align-items: center;
         }
 
-        .brand { font-size: 1.1rem; font-weight: 500; color: #E3E3E3; }
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* استدعاء اللوغو من ملفاتك */
+        .app-logo { 
+            height: 35px; 
+            width: auto; 
+            object-fit: contain; 
+        }
+
+        .brand-name { 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            color: #E3E3E3; 
+            letter-spacing: 1px;
+        }
         
         .user-avatar { 
-            width: 32px; height: 32px; 
-            background: #FF8A65; /* لون برتقالي فاتح */
+            width: 35px; height: 35px; 
+            background: #FF8A65;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             font-size: 0.9rem; font-weight: bold; color: #3E2723;
         }
 
-        /* --- شاشة الترحيب (مطابقة للصورة) --- */
+        /* --- شاشة الترحيب --- */
         #welcome-screen {
             flex: 1;
             display: flex;
@@ -66,7 +84,7 @@
         .greeting-name {
             font-size: 3.5rem;
             font-weight: 500;
-            /* التدرج اللوني الأزرق للأحمر */
+            /* التدرج اللوني الذي أعجبك */
             background: linear-gradient(90deg, #5c97ff, #ff6b6b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -76,15 +94,20 @@
         .greeting-sub {
             font-size: 3.5rem;
             font-weight: 500;
-            color: #E3E3E3; /* أبيض */
+            color: #E3E3E3;
             margin-bottom: 40px;
             line-height: 1.1;
         }
+        
+        /* جعل النصوص أصغر قليلاً في الموبايل */
+        @media (max-width: 480px) {
+            .greeting-hi, .greeting-name, .greeting-sub { font-size: 2.8rem; }
+        }
 
-        /* الكبسولات (Chips) */
+        /* الكبسولات */
         .suggestions {
             display: flex;
-            flex-direction: column; /* قائمة عمودية */
+            flex-direction: column;
             gap: 12px;
             align-items: flex-start;
         }
@@ -101,7 +124,6 @@
         }
         .chip:hover { background-color: #333; }
         
-        /* ألوان الأيقونات */
         .icon-yellow { color: #FBC02D; }
         .icon-blue { color: #4285F4; }
         .icon-green { color: #34A853; }
@@ -120,21 +142,19 @@
             background-color: #282A2C;
             color: white;
             padding: 12px 20px;
-            border-radius: 20px 20px 4px 20px;
+            border-radius: 20px 20px 20px 4px; /* زوايا مناسبة للعربي */
         }
 
         .bot-message {
             align-self: flex-start;
             background: transparent;
             color: #E3E3E3;
-            padding: 0; padding-right: 15px;
+            padding: 0; padding-left: 15px;
         }
-        .bot-message::before { content: '✨'; display: inline-block; margin-right: 8px; }
-        
-        /* Markdown */
+        .bot-message::before { content: '✨'; display: inline-block; margin-left: 8px; }
         .bot-message code { background: #2D2E30; padding: 2px 5px; border-radius: 4px; color: #A8C7FA; font-family: monospace; }
 
-        /* --- شريط الإدخال (Ask Gemini Style) --- */
+        /* --- شريط الإدخال --- */
         #input-area {
             position: fixed; bottom: 20px; left: 15px; right: 15px;
             background-color: #1E1F20; border-radius: 35px; padding: 8px 15px;
@@ -145,7 +165,20 @@
             color: #C4C7C5; background: transparent; border: none; font-size: 1.5rem; 
             width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
-        .plus-btn:hover { background-color: #333; }
+
+        /* زر اللغة الجديد */
+        #langBtn {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            min-width: 50px;
+            text-align: center;
+        }
 
         #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1.1rem; padding: 5px; outline: none; }
         
@@ -155,35 +188,38 @@
             width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; 
             color: white; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
-        .icon-btn:hover { background-color: #333; }
-        
-        #sendBtn { display: none; color: #A8C7FA; } /* زر الإرسال مخفي افتراضياً */
+        #micBtn { background: #2C2C2E; width: 45px; height: 45px; border-radius: 50%; justify-content: center; }
+        #micBtn.recording { color: #ff4d4d; }
+        #sendBtn { display: none; color: #A8C7FA; transform: scaleX(-1); /* قلب السهم للعربي */ }
 
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand">Gemini</div>
+        <div class="brand-container">
+            <img src="images/logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'">
+            <div class="brand-name">MVC AI</div>
+        </div>
         <div class="user-avatar">MU</div>
     </header>
 
     <div id="welcome-screen">
         <div class="greeting-hi">Hi <span class="greeting-name">MURTADA-</span></div>
-        <div class="greeting-sub">Where should<br>we start?</div>
+        <div class="greeting-sub">بم نبدأ اليوم؟</div>
         
         <div class="suggestions">
-            <div class="chip" onclick="sendMessage('Create a creative image description')">
-                <i class="fas fa-image icon-yellow"></i> Create image
+            <div class="chip" onclick="sendMessage('ولّد لي صورة إبداعية')">
+                <i class="fas fa-image icon-yellow"></i> إنشاء صورة
             </div>
-            <div class="chip" onclick="sendMessage('Write a script for a video about AI')">
-                <i class="fas fa-video icon-blue"></i> Create a video
+            <div class="chip" onclick="sendMessage('اكتب لي سكريبت فيديو يوتيوب')">
+                <i class="fas fa-video icon-blue"></i> إنشاء فيديو
             </div>
-            <div class="chip" onclick="sendMessage('Write a creative story')">
-                <i class="fas fa-file-alt icon-green"></i> Write anything
+            <div class="chip" onclick="sendMessage('اكتب قصة قصيرة ممتعة')">
+                <i class="fas fa-file-alt icon-green"></i> كتابة إبداعية
             </div>
-            <div class="chip" onclick="sendMessage('Help me learn something new')">
-                <i class="fas fa-book icon-red"></i> Help me learn
+            <div class="chip" onclick="sendMessage('ساعدني في تعلم البرمجة')">
+                <i class="fas fa-book icon-red"></i> ساعدني في التعلم
             </div>
         </div>
     </div>
@@ -191,14 +227,14 @@
     <div id="chat-container"></div>
 
     <div id="input-area">
-        <button class="plus-btn"><i class="fas fa-plus"></i></button>
+        <button id="langBtn">AR</button>
         
-        <input type="text" id="textInput" placeholder="Ask Gemini" autocomplete="off">
+        <input type="text" id="textInput" placeholder="اسأل MVC AI" autocomplete="off">
         
         <div class="right-icons">
             <button class="icon-btn" id="micBtn"><i class="fas fa-microphone"></i></button>
             <button class="icon-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
-            <button class="icon-btn"><i class="fas fa-wand-magic-sparkles"></i></button> </div>
+        </div>
     </div>
 
     <script>
@@ -207,10 +243,30 @@
         const textInput = document.getElementById('textInput');
         const sendBtn = document.getElementById('sendBtn');
         const micBtn = document.getElementById('micBtn');
+        const langBtn = document.getElementById('langBtn');
 
         let isFirstMessage = true;
+        let currentLang = 'ar-SA'; // اللغة الافتراضية
 
-        // تبديل زر الإرسال والمايك عند الكتابة
+        // منطق تبديل اللغة
+        langBtn.addEventListener('click', () => {
+            if (currentLang === 'ar-SA') {
+                currentLang = 'en-US';
+                langBtn.textContent = 'EN';
+                textInput.placeholder = "Ask MVC AI...";
+                textInput.dir = "ltr";
+                document.documentElement.dir = "ltr"; // تغيير اتجاه الصفحة
+                document.getElementById('sendBtn').style.transform = "scaleX(1)"; // تعديل اتجاه السهم
+            } else {
+                currentLang = 'ar-SA';
+                langBtn.textContent = 'AR';
+                textInput.placeholder = "اسأل MVC AI...";
+                textInput.dir = "rtl";
+                document.documentElement.dir = "rtl";
+                document.getElementById('sendBtn').style.transform = "scaleX(-1)";
+            }
+        });
+
         textInput.addEventListener('input', () => {
             if (textInput.value.trim().length > 0) {
                 micBtn.style.display = 'none';
@@ -233,39 +289,36 @@
             if (!text) return;
             hideWelcome();
 
-            // عرض رسالة المستخدم
             const userDiv = document.createElement('div');
             userDiv.classList.add('message', 'user-message');
             userDiv.textContent = text;
             chatContainer.appendChild(userDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // تنظيف الحقل
             textInput.value = '';
             micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
 
             try {
+                // نرسل اللغة المختارة مع الرسالة
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
+                    body: JSON.stringify({ message: text, language: currentLang })
                 });
                 const data = await response.json();
                 
-                // عرض رد البوت
                 const botDiv = document.createElement('div');
                 botDiv.classList.add('message', 'bot-message');
                 botDiv.innerHTML = marked.parse(data.reply);
                 chatContainer.appendChild(botDiv);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
 
-                // النطق الذكي (يكتشف اللغة تلقائياً)
                 speak(data.reply);
 
             } catch (error) {
                 const errDiv = document.createElement('div');
                 errDiv.classList.add('message', 'bot-message');
-                errDiv.textContent = "حدث خطأ في الاتصال بالسيرفر.";
+                errDiv.textContent = "Error / خطأ في الاتصال";
                 chatContainer.appendChild(errDiv);
             }
         }
@@ -273,12 +326,11 @@
         sendBtn.addEventListener('click', () => sendMessage(textInput.value));
         textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(textInput.value); });
 
-        // التعرف على الصوت (يدعم لغات متعددة)
+        // إعدادات المايك بناءً على زر اللغة
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        // إزالة تحديد اللغة ليحاول المتصفح اكتشافها أو استخدام لغة الجهاز
-        // recognition.lang = 'ar-SA'; 
-
+        
         micBtn.addEventListener('click', () => {
+            recognition.lang = currentLang; // تحديث لغة المايك حسب الزر
             if (micBtn.classList.contains('recording')) recognition.stop();
             else recognition.start();
         });
@@ -291,20 +343,13 @@
             sendMessage(transcript);
         };
 
-        // دالة النطق الذكية (تحدد لغة الرد)
         function speak(text) {
             window.speechSynthesis.cancel();
-            // تنظيف النص من الرموز
             const cleanText = text.replace(/[*#`_]/g, '');
             const u = new SpeechSynthesisUtterance(cleanText);
-            
-            // كشف بسيط: هل النص يحتوي على حروف عربية؟
-            const isArabic = /[\u0600-\u06FF]/.test(cleanText);
-            u.lang = isArabic ? 'ar-SA' : 'en-US';
-            
+            u.lang = currentLang; // النطق بنفس اللغة المختارة
             window.speechSynthesis.speak(u);
         }
     </script>
 </body>
 </html>
- 
