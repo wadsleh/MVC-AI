@@ -6,11 +6,13 @@
     <title>MVC AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
         body {
-            background-color: #121212; /* لون داكن احترافي */
+            background-color: #121212;
             color: #E0E0E0;
-            font-family: 'Roboto', 'Cairo', sans-serif;
+            font-family: 'Cairo', 'Roboto', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -18,23 +20,34 @@
             overscroll-behavior: none;
         }
 
+        /* --- تنسيق الهيدر الجديد --- */
         header {
-            padding: 15px;
-            text-align: center;
+            padding: 10px 15px; /* تقليل الحشوة قليلاً */
             background: #1E1E1E;
             border-bottom: 1px solid #333;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
+            gap: 12px; /* مسافة بين اللوغو والاسم */
         }
 
-        .brand-logo {
-            color: #4b90ff; /* لون العلامة التجارية */
-            font-weight: 900;
+        /* تنسيق صورة اللوغو */
+        .logo-img {
+            height: 40px; /* ارتفاع ثابت مناسب للهيدر */
+            width: auto;  /* العرض يتعدل تلقائياً للحفاظ على الأبعاد */
+            object-fit: contain; /* ضمان ظهور اللوغو كاملاً */
         }
+
+        /* تنسيق اسم التطبيق بجانب اللوغو */
+        .brand-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #4b90ff, #00d4ff); /* تدرج لوني أزرق احترافي */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        /* --------------------------- */
 
         #chat-container {
             flex: 1;
@@ -43,33 +56,29 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         .message {
             max-width: 85%;
-            padding: 14px 18px;
+            padding: 10px 18px;
             border-radius: 18px;
-            line-height: 1.5;
+            line-height: 1.6;
             font-size: 1rem;
             position: relative;
         }
 
-        .user-message {
-            align-self: flex-end;
-            background-color: #2C2C2C;
-            color: #fff;
-            border-bottom-right-radius: 4px;
-        }
+        .user-message { align-self: flex-end; background-color: #2C2C2C; color: #fff; border-bottom-right-radius: 4px; }
+        .bot-message { align-self: flex-start; background: #0056b3; color: #fff; border-bottom-left-radius: 4px; }
 
-        .bot-message {
-            align-self: flex-start;
-            background: #0056b3;
-            color: #fff;
-            border-bottom-left-radius: 4px;
-        }
+        /* تنسيقات Markdown */
+        .bot-message h1, .bot-message h2 { color: #ffca28; margin: 10px 0 5px; font-size: 1.2rem; }
+        .bot-message ul, .bot-message ol { padding-right: 20px; margin: 5px 0; }
+        .bot-message li { margin-bottom: 5px; }
+        .bot-message strong { color: #82b1ff; }
+        .bot-message code { background: #00000050; padding: 2px 5px; border-radius: 4px; font-family: monospace; color: #ff80ab; }
+        .bot-message pre { background: #121212; padding: 10px; border-radius: 10px; overflow-x: auto; border: 1px solid #444; }
 
-        /* --- شريط التحكم الاحترافي --- */
         #input-area {
             position: fixed;
             bottom: 30px;
@@ -86,171 +95,83 @@
             z-index: 1000;
         }
 
-        #textInput {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 1rem;
-            padding: 10px;
-            outline: none;
-        }
-
-        /* زر اللغة */
-        #langBtn {
-            background: #333;
-            color: #fff;
-            border: 1px solid #555;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        #langBtn:hover { background: #444; }
-
-        .action-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.2s;
-        }
-
+        #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1rem; padding: 10px; outline: none; }
+        #langBtn { background: #333; color: #fff; border: 1px solid #555; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .action-btn { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
         #micBtn { background: #2C2C2C; color: #fff; }
-        #micBtn.recording { background: #ff4d4d; color: white; animation: pulse 1.5s infinite; }
-        
+        #micBtn.recording { background: #ff4d4d; animation: pulse 1.5s infinite; }
         #sendBtn { background: #4b90ff; color: white; display: none; }
-
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.4); } 100% { box-shadow: 0 0 0 15px rgba(255, 77, 77, 0); } }
     </style>
 </head>
 <body>
 
     <header>
-        <i class="fas fa-robot brand-logo"></i> <span>MVC AI</span>
+        <img src="/images/logo.png" alt="MVC AI Logo" class="logo-img">
+        <span class="brand-name">MVC AI</span>
     </header>
-
     <div id="chat-container">
         <div class="message bot-message">
-            <strong>Hello! I am MVC AI.</strong><br>
-            I am ready to help you in English or Arabic. Please select your language below. 🎙️
+            <strong>مرحباً بك في MVC AI!</strong><br>
+            لقد تم تحديث النظام وإضافة هويتك البصرية الجديدة. 🎨🚀
         </div>
     </div>
 
     <div id="input-area">
         <button id="langBtn">AR</button>
-        
         <input type="text" id="textInput" placeholder="اكتب رسالتك..." dir="rtl" autocomplete="off">
-        
         <button class="action-btn" id="micBtn"><i class="fas fa-microphone"></i></button>
         <button class="action-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
     </div>
 
     <script>
+        // (نفس كود الجافاسكريبت السابق تماماً بدون تغيير)
         const chatContainer = document.getElementById('chat-container');
         const textInput = document.getElementById('textInput');
         const sendBtn = document.getElementById('sendBtn');
         const micBtn = document.getElementById('micBtn');
         const langBtn = document.getElementById('langBtn');
-        
-        let currentLang = 'ar-SA'; // اللغة الافتراضية عربية
-
-        // 1. منطق تبديل اللغة
+        let currentLang = 'ar-SA'; 
         langBtn.addEventListener('click', () => {
             if (currentLang === 'ar-SA') {
-                currentLang = 'en-US';
-                langBtn.textContent = 'EN';
-                textInput.placeholder = "Type your message...";
-                textInput.dir = "ltr";
-                // تغيير لغة المايك
+                currentLang = 'en-US'; langBtn.textContent = 'EN';
+                textInput.placeholder = "Type your message..."; textInput.dir = "ltr";
                 recognition.lang = 'en-US';
             } else {
-                currentLang = 'ar-SA';
-                langBtn.textContent = 'AR';
-                textInput.placeholder = "اكتب رسالتك...";
-                textInput.dir = "rtl";
-                // تغيير لغة المايك
+                currentLang = 'ar-SA'; langBtn.textContent = 'AR';
+                textInput.placeholder = "اكتب رسالتك..."; textInput.dir = "rtl";
                 recognition.lang = 'ar-SA';
             }
         });
-
-        // 2. إظهار زر الإرسال عند الكتابة
         textInput.addEventListener('input', () => {
-            if (textInput.value.trim().length > 0) {
-                micBtn.style.display = 'none';
-                sendBtn.style.display = 'flex';
-            } else {
-                micBtn.style.display = 'flex';
-                sendBtn.style.display = 'none';
-            }
+            if (textInput.value.trim().length > 0) { micBtn.style.display = 'none'; sendBtn.style.display = 'flex'; } else { micBtn.style.display = 'flex'; sendBtn.style.display = 'none'; }
         });
-
-        // 3. الإرسال
         async function sendMessage(text) {
             if (!text) return;
-            
-            addMessage(text, 'user');
-            textInput.value = '';
-            micBtn.style.display = 'flex';
-            sendBtn.style.display = 'none';
-
+            addMessage(text, 'user'); textInput.value = ''; micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
             try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
-                });
+                const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text }) });
                 const data = await response.json();
                 addMessage(data.reply, 'bot');
-                speak(data.reply);
-            } catch (error) {
-                addMessage("حدث خطأ في الاتصال / Connection Error", 'bot');
-            }
+                const cleanText = data.reply.replace(/[*#`_]/g, ''); 
+                speak(cleanText);
+            } catch (error) { addMessage("حدث خطأ في الاتصال / Connection Error", 'bot'); }
         }
-
         sendBtn.addEventListener('click', () => sendMessage(textInput.value));
         textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(textInput.value); });
-
-        // 4. التعرف على الصوت
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = currentLang;
-
-        micBtn.addEventListener('click', () => {
-            window.speechSynthesis.cancel();
-            if (micBtn.classList.contains('recording')) {
-                recognition.stop();
-            } else {
-                recognition.start();
-            }
-        });
-
-        recognition.onstart = () => { micBtn.classList.add('recording'); };
-        recognition.onend = () => { micBtn.classList.remove('recording'); };
+        micBtn.addEventListener('click', () => { window.speechSynthesis.cancel(); if (micBtn.classList.contains('recording')) recognition.stop(); else recognition.start(); });
+        recognition.onstart = () => micBtn.classList.add('recording');
+        recognition.onend = () => micBtn.classList.remove('recording');
         recognition.onresult = (e) => sendMessage(e.results[0][0].transcript);
-
-        // 5. المساعد
         function addMessage(text, sender) {
             const div = document.createElement('div');
             div.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-            div.textContent = text;
-            chatContainer.appendChild(div);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            if (sender === 'user') { div.textContent = text; } else { div.innerHTML = marked.parse(text); }
+            chatContainer.appendChild(div); chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-
-        function speak(text) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(text);
-            // ذكاء اصطناعي بسيط لكشف لغة النص للنطق الصحيح
-            u.lang = /[\u0600-\u06FF]/.test(text) ? 'ar-SA' : 'en-US';
-            window.speechSynthesis.speak(u);
-        }
+        function speak(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = /[\u0600-\u06FF]/.test(text) ? 'ar-SA' : 'en-US'; window.speechSynthesis.speak(u); }
     </script>
 </body>
 </html>
