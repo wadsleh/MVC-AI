@@ -12,8 +12,13 @@ const GROQ_API_KEY = process.env.MURTA;
 app.post('/api/chat', async (req, res) => {
   const { message, image } = req.body;
 
-  // دالة مساعدة للاتصال بالموديل
-  const callGroq = async (modelName, content) => {
+  try {
+    let userContent = [{ type: "text", text: message }];
+    
+    // ملاحظة: موديلات الصور في Groq غير مستقرة حالياً
+    // سنعتمد على أقوى موديل نصوص لضمان عمل التطبيق دون توقف
+    // ونضيف تعليمات صارمة لفهم اللغة
+    
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -22,42 +27,28 @@ app.post('/api/chat', async (req, res) => {
         },
         body: JSON.stringify({
             messages: [
-                { role: "system", content: "You are MVC AI. Helpful assistant." },
-                { role: "user", content: content }
+                { 
+                    role: "system", 
+                    // ⚠️ هذا السطر هو السر لجعل البوت يفهم كل اللغات
+                    content: "You are a helpful and smart AI assistant. You must reply in the EXACT SAME LANGUAGE the user speaks. If they speak Arabic, reply in Arabic. If English, reply in English." 
+                },
+                { role: "user", content: userContent }
             ],
-            model: modelName,
+            // ✅ الموديل الجوكر: قوي، سريع، ويدعم العربية بطلاقة
+            model: "llama-3.3-70b-versatile",
             temperature: 0.7
         })
     });
-    return await response.json();
-  };
 
-  try {
-    let userContent = [{ type: "text", text: message }];
-    let targetModel = "llama-3.3-70b-versatile"; // الموديل الأساسي المستقر
-
-    // إذا كان هناك صورة، نحاول استخدام موديل الرؤية
-    if (image) {
-        userContent.push({ type: "image_url", image_url: { url: image } });
-        targetModel = "llama-3.2-90b-vision-preview"; // موديل الصور القوي
-    }
-
-    let data = await callGroq(targetModel, userContent);
-
-    // ⚠️ الذكاء هنا: إذا فشل موديل الصور، نتحول لموديل النصوص فوراً
-    if (data.error) {
-        console.log("Vision model failed, switching to text model...");
-        // نلغي الصورة ونرسل النص فقط للموديل المستقر
-        userContent = [{ type: "text", text: message + " (Image analysis failed, replying to text only)" }];
-        data = await callGroq("llama-3.3-70b-versatile", userContent);
-    }
+    const data = await response.json();
 
     if (data.error) throw new Error(data.error.message);
+    
     res.json({ reply: data.choices[0].message.content });
 
   } catch (error) {
-    console.error("Final Error:", error);
-    res.status(500).json({ reply: "نواجه ضغطاً على السيرفرات، يرجى المحاولة بعد قليل." });
+    console.error("Server Error:", error);
+    res.status(500).json({ reply: "نواجه ضغطاً على السيرفر، حاول مرة أخرى." });
   }
 });
 
