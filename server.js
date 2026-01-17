@@ -10,6 +10,10 @@ app.use(express.static('public'));
 // ⚠️ ضع مفتاح Groq الجديد هنا (يبدأ بـ gsk_)
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
+// هذا السطر سيطبع في الـ Logs هل المفتاح موجود أم لا
+console.log("Is Key Loaded?", GROQ_API_KEY ? "YES ✅" : "NO ❌");
+
+
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
