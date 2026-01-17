@@ -30,7 +30,7 @@
 
         /* --- الهيدر --- */
         header {
-            padding: 15px 10px; 
+            padding: 15px 15px; 
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -51,13 +51,12 @@
             margin-right: 5px; 
         }
 
-        /* --- الشات --- */
-        #chat-container {
-            flex: 1; padding: 20px; padding-bottom: 140px; 
-            overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+        /* --- شاشة الترحيب --- */
+        #welcome-screen {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            padding: 20px; padding-bottom: 120px;
         }
 
-        .welcome-message { margin-top: 50px; padding: 20px; text-align: left; }
         .greeting-hi { font-size: 3.5rem; font-weight: 500; color: white; line-height: 1.1; }
         .greeting-name {
             font-size: 3.5rem; font-weight: 500;
@@ -84,6 +83,13 @@
         .icon-green { color: #34A853; }
         .icon-red { color: #EA4335; }
 
+        /* --- الشات --- */
+        #chat-container {
+            flex: 1; padding: 20px; padding-bottom: 140px; 
+            overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .welcome-message { margin-top: 50px; padding: 20px; text-align: left; }
         .message { max-width: 90%; line-height: 1.6; font-size: 1rem; position: relative; }
         .user-message {
             align-self: flex-end; background-color: #282A2C; color: white;
@@ -99,10 +105,10 @@
 
         /* --- صندوق المعاينة --- */
         #preview-container {
-            position: fixed; bottom: 85px; left: 20px;
+            position: fixed; bottom: 90px; left: 20px;
             background: #2C2C2E; padding: 10px; border-radius: 12px;
             display: none; z-index: 1001; border: 1px solid #444;
-            color: #fff; font-size: 0.9rem;
+            color: #fff;
         }
         #preview-image { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; display: none; }
         #file-icon { font-size: 2rem; color: #A8C7FA; margin-right: 10px; display: none; }
@@ -113,83 +119,60 @@
             cursor: pointer; font-size: 14px; border: 2px solid #2C2C2E;
         }
 
-        /* --- شريط الإدخال (تصميم Gemini الدقيق) --- */
+        /* --- شريط الإدخال --- */
         #input-area {
             position: fixed; bottom: 20px; left: 15px; right: 15px;
-            background-color: #1E1F20; 
-            border-radius: 35px; /* كبسولة كاملة */
+            background-color: #1E1F20; border-radius: 35px;
             
-            /* حشو متوازن ليسمح للمايك بالتنفس */
-            padding: 8px 15px 8px 15px; 
+            /* ✅ الحل هنا: مسافة كبيرة من اليمين (padding-right) */
+            /* هذا يدفع العناصر للداخل ويمنع التصاق المايك بالحافة */
+            padding: 10px 25px 10px 15px; 
             
-            display: flex; align-items: center; gap: 5px; z-index: 1000;
+            display: flex; align-items: center; gap: 8px; z-index: 1000;
             min-height: 60px;
-            border: 1px solid rgba(255,255,255,0.05); /* حدود خفيفة جداً */
         }
 
-        /* زر اللغة (يسار) */
+        /* تعديل إضافي للموبايلات الصغيرة لضمان البعد عن الحافة */
+        @media (max-width: 480px) {
+            #input-area {
+                padding-right: 25px; /* إبعاد المايك عن الحافة المنحنية */
+            }
+        }
+
         #langBtn {
-            background: #333; color: #fff; border: none; padding: 8px 14px;
+            background: #333; color: #fff; border: 1px solid #555; padding: 8px 12px;
             border-radius: 20px; font-size: 0.9rem; font-weight: bold; cursor: pointer;
-            min-width: 45px; text-align: center;
+            min-width: 50px; text-align: center;
         }
         
         .attach-btn {
             background: transparent; border: none; color: #C4C7C5; 
-            font-size: 1.4rem; cursor: pointer; padding: 8px;
+            font-size: 1.3rem; cursor: pointer; padding: 5px;
             display: flex; align-items: center; justify-content: center;
         }
-        .attach-btn:hover { color: #fff; }
 
-        #textInput { 
-            flex: 1; 
-            background: transparent; 
-            border: none; 
-            color: white; 
-            font-size: 1.1rem; 
-            padding: 5px 10px; 
-            outline: none; 
-        }
+        #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1.1rem; padding: 5px; outline: none; }
         
-        /* --- المايك (النسخة الأصلية) --- */
-        /* تجميع أزرار اليمين */
-        .right-controls {
-            display: flex;
-            align-items: center;
-            padding-right: 5px; /* مسافة بسيطة من الحافة */
-        }
+        /* مجموعة اليمين */
+        .right-controls { display: flex; align-items: center; gap: 5px; }
 
         .icon-btn { 
-            width: 48px; height: 48px; /* حجم كبير للمس */
-            border-radius: 50%; border: none; 
-            background: transparent; /* خلفية شفافة لدمجها مع الشريط */
+            width: 45px; height: 45px; 
+            border-radius: 50%; border: none; background: transparent; 
             color: white; font-size: 1.4rem; /* أيقونة كبيرة */
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: 0.2s;
         }
         
-        /* المايك بدون خلفية غامقة (مثل Gemini) */
         #micBtn { 
+            /* خلفية شفافة مثل Gemini */
             background: transparent; 
+            width: 48px; height: 48px; 
+            justify-content: center;
         }
-        
         #micBtn:active { background: rgba(255,255,255,0.1); }
+        #micBtn.recording { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border-radius: 50%; }
         
-        /* عند التسجيل: يظهر بلون مميز */
-        #micBtn.recording { 
-            color: #ff4d4d; 
-            background: rgba(255, 77, 77, 0.1);
-            animation: pulse 1.5s infinite;
-        }
-
-        /* زر الإرسال */
-        #sendBtn { 
-            display: none; 
-            color: #A8C7FA; 
-            transform: rotate(0deg); 
-        }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        #sendBtn { display: none; color: #A8C7FA; width: 48px; height: 48px; }
 
     </style>
 </head>
@@ -260,18 +243,15 @@
 
         let isFirstMessage = true;
         let currentLang = 'en-US';
-        
         let currentImageBase64 = null;
         let currentFileContent = null;
         let currentFileName = null;
 
-        // --- إدارة الملفات ---
         fileBtn.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             currentFileName = file.name;
 
@@ -315,7 +295,6 @@
             }
         });
 
-        // --- تبديل اللغة ---
         langBtn.addEventListener('click', () => {
             if (currentLang === 'en-US') {
                 currentLang = 'ar-SA'; langBtn.textContent = 'EN';
@@ -347,11 +326,8 @@
 
             const userDiv = document.createElement('div');
             userDiv.classList.add('message', 'user-message');
-            
             let displayText = text;
-            if (currentFileContent) {
-                displayText = text + `\n📄 [File: ${currentFileName}]`;
-            }
+            if (currentFileContent) displayText = text + `\n📄 [File: ${currentFileName}]`;
             userDiv.textContent = displayText;
 
             if (currentImageBase64) {
@@ -365,15 +341,9 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             let finalMessage = text;
-            if (currentFileContent) {
-                finalMessage = (text || "Analyze this file:") + "\n\nFile Content:\n" + currentFileContent;
-            }
+            if (currentFileContent) finalMessage = (text || "Analyze this file:") + "\n\nFile Content:\n" + currentFileContent;
 
-            const payload = { 
-                message: finalMessage, 
-                image: currentImageBase64, 
-                language: currentLang 
-            };
+            const payload = { message: finalMessage, image: currentImageBase64, language: currentLang };
 
             textInput.value = '';
             currentImageBase64 = null;
@@ -401,7 +371,7 @@
             } catch (error) {
                 const errDiv = document.createElement('div');
                 errDiv.classList.add('message', 'bot-message');
-                errDiv.textContent = "Error processing request.";
+                errDiv.textContent = "Error.";
                 chatContainer.appendChild(errDiv);
             }
         }
@@ -436,3 +406,4 @@
     </script>
 </body>
 </html>
+ 
