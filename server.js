@@ -10,9 +10,9 @@ app.use(express.static('public'));
 // استدعاء المفتاح من متغيرات البيئة الآمنة
 const HF_TOKEN = process.env.HF_TOKEN;
 
+// موديل Qwen الخفيف (1.5B) - يعمل دائماً وسريع جداً في الرد
+const MODEL_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-1.5B-Instruct";
 
-// موديل Zephyr: سريع، ذكي، ومجاني دائماً
-const MODEL_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta";
 
 app.post('/api/chat', async (req, res) => {
   try {
