@@ -28,7 +28,7 @@
             overscroll-behavior: none;
         }
 
-        /* --- الهيدر --- */
+        /* --- الهيدر (تم تعديله ليعرض اللوغو الخاص بك) --- */
         header {
             padding: 20px 25px;
             display: flex;
@@ -36,9 +36,26 @@
             align-items: center;
         }
 
-        .brand-container { display: flex; align-items: center; gap: 10px; }
-        .app-logo { height: 35px; width: auto; object-fit: contain; }
-        .brand-name { font-size: 1.2rem; font-weight: 600; color: #E3E3E3; letter-spacing: 1px; }
+        .brand-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; /* مسافة بين اللوغو والاسم */
+        }
+
+        /* تنسيق اللوغو الخاص بك */
+        .app-logo { 
+            height: 38px; /* ارتفاع مناسب */
+            width: auto; 
+            object-fit: contain; 
+        }
+
+        .brand-name { 
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            color: #E3E3E3; 
+            letter-spacing: 0.5px;
+        }
+
         .user-avatar { 
             width: 35px; height: 35px; background: #FF8A65; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -133,7 +150,7 @@
 
     <header>
         <div class="brand-container">
-            <img src="images/logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'">
+            <img src="images/logo.png" alt="MVC AI" class="app-logo">
             <div class="brand-name">MVC AI</div>
         </div>
         <div class="user-avatar">F</div>
@@ -176,7 +193,7 @@
         const langBtn = document.getElementById('langBtn');
 
         let isFirstMessage = true;
-        let currentLang = 'en-US'; // البداية إنجليزي
+        let currentLang = 'en-US';
 
         // تبديل اللغة
         langBtn.addEventListener('click', () => {
@@ -251,13 +268,12 @@
         sendBtn.addEventListener('click', () => sendMessage(textInput.value));
         textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(textInput.value); });
 
-        // إعدادات المايك
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         
         micBtn.addEventListener('click', () => {
             recognition.lang = currentLang;
             
-            // ✅ تم إعادة هذا السطر: يوقف الصوت عند ضغط المايك
+            // ✅ ميزة مقاطعة الصوت (أعدتها لك)
             window.speechSynthesis.cancel();
             
             if (micBtn.classList.contains('recording')) recognition.stop();
@@ -273,7 +289,7 @@
         };
 
         function speak(text) {
-            window.speechSynthesis.cancel(); // إيقاف أي صوت قديم قبل بدء الجديد
+            window.speechSynthesis.cancel(); 
             const cleanText = text.replace(/[*#`_]/g, '');
             const u = new SpeechSynthesisUtterance(cleanText);
             u.lang = currentLang;
