@@ -30,34 +30,34 @@
 
         /* --- الهيدر --- */
         header {
-            padding: 15px 20px;
+            padding: 15px 10px; 
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .brand-container { display: flex; align-items: center; gap: 10px; }
-        
+        .brand-container { display: flex; align-items: center; gap: 8px; }
+
         .app-logo { 
-            height: 50px; 
+            height: 45px; 
             width: auto; 
-            max-width: 160px; 
+            max-width: 150px; 
             object-fit: contain; 
             display: block; 
         }
 
-        .brand-name { font-size: 1.3rem; font-weight: 600; color: #E3E3E3; letter-spacing: 0.5px; }
-        
+        .brand-name { font-size: 1.2rem; font-weight: 600; color: #E3E3E3; letter-spacing: 0.5px; }
         .user-avatar { 
-            width: 35px; height: 35px; background: #FF8A65; border-radius: 50%;
+            width: 32px; height: 32px; background: #FF8A65; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             font-size: 0.9rem; font-weight: bold; color: #3E2723;
+            margin-right: 5px; 
         }
 
         /* --- شاشة الترحيب --- */
         #welcome-screen {
             flex: 1; display: flex; flex-direction: column; justify-content: center;
-            padding: 25px; padding-bottom: 120px;
+            padding: 20px; padding-bottom: 120px;
         }
 
         .greeting-hi { font-size: 3.5rem; font-weight: 500; color: white; line-height: 1.1; }
@@ -71,7 +71,6 @@
             font-size: 3.5rem; font-weight: 500; color: #E3E3E3;
             margin-bottom: 40px; line-height: 1.1;
         }
-        
         @media (max-width: 480px) {
             .greeting-hi, .greeting-name, .greeting-sub { font-size: 2.8rem; }
         }
@@ -106,7 +105,7 @@
         .bot-message code { background: #2D2E30; padding: 2px 5px; border-radius: 4px; color: #A8C7FA; font-family: monospace; }
 
         #preview-container {
-            position: fixed; bottom: 90px; left: 20px;
+            position: fixed; bottom: 85px; left: 20px;
             background: #2C2C2E; padding: 8px; border-radius: 12px;
             display: none; z-index: 1001; border: 1px solid #444;
         }
@@ -123,249 +122,29 @@
             position: fixed; bottom: 20px; left: 15px; right: 15px;
             background-color: #1E1F20; border-radius: 35px;
             
-            /* ✅ التعديل هنا: زيادة المسافة اليمنى لراحة المايك */
-            padding: 10px 20px 10px 15px; 
+            /* ✅ التعديل هنا: زيادة كبيرة في الحشو الأيمن (30px) */
+            padding: 8px 30px 8px 15px; 
             
-            display: flex; align-items: center; gap: 10px; z-index: 1000;
+            display: flex; align-items: center; gap: 8px; z-index: 1000;
             min-height: 60px;
         }
 
-        /* ✅ تعديل خاص للموبايل فقط */
-        @media (max-width: 480px) {
-            #input-area {
-                padding-right: 25px; /* دفع المايك لليسار قليلاً في الموبايل */
-                padding-left: 15px;
-            }
-        }
-
         #langBtn {
-            background: #333; color: #fff; border: 1px solid #555; padding: 8px 12px;
-            border-radius: 20px; font-size: 0.9rem; font-weight: bold; cursor: pointer;
-            min-width: 50px; text-align: center;
+            background: #333; color: #fff; border: 1px solid #555; padding: 6px 10px;
+            border-radius: 20px; font-size: 0.8rem; font-weight: bold; cursor: pointer;
+            min-width: 40px; text-align: center;
         }
         
         .attach-btn {
             background: transparent; border: none; color: #C4C7C5; 
-            font-size: 1.3rem; cursor: pointer; padding: 5px;
+            font-size: 1.2rem; cursor: pointer; padding: 5px;
             display: flex; align-items: center; justify-content: center;
         }
 
-        #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1.1rem; padding: 5px; outline: none; }
+        #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1rem; padding: 5px; outline: none; }
         
-        /* --- المايك كبير وواضح --- */
+        /* --- المايك --- */
         .icon-btn { 
-            width: 45px; height: 45px; 
-            border-radius: 50%; border: none; background: transparent; 
-            color: white; font-size: 1.2rem; 
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        #micBtn { 
-            background: #2C2C2E; 
-            width: 50px; height: 50px; 
-            border-radius: 50%; 
-            justify-content: center;
-            /* إزالة أي هوامش زائدة */
-            margin: 0;
-        }
-        
-        #micBtn:active { background: #3c3c3e; }
-        #micBtn.recording { color: #ff4d4d; background: #3c2020; }
-        
-        #sendBtn { display: none; color: #A8C7FA; width: 50px; height: 50px; }
-
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="brand-container">
-            <img src="images/logo.png" alt="MVC AI" class="app-logo">
-            <div class="brand-name">MVC AI</div>
-        </div>
-        <div class="user-avatar">F</div>
-    </header>
-
-    <div id="welcome-screen">
-        <div class="greeting-hi">Hi <span class="greeting-name">Friend</span></div>
-        <div class="greeting-sub">Where should we start?</div>
-        
-        <div class="suggestions">
-            <div class="chip" onclick="sendMessage('Create a creative image description')">
-                <i class="fas fa-image icon-yellow"></i> Create image
-            </div>
-            <div class="chip" onclick="sendMessage('Write a creative story')">
-                <i class="fas fa-file-alt icon-green"></i> Write anything
-            </div>
-            <div class="chip" onclick="sendMessage('Help me learn something new')">
-                <i class="fas fa-book icon-red"></i> Help me learn
-            </div>
-        </div>
-    </div>
-
-    <div id="chat-container"></div>
-
-    <div id="preview-container">
-        <span id="remove-file">×</span>
-        <img id="preview-image" src="" alt="preview">
-    </div>
-
-    <div id="input-area">
-        <button id="langBtn">AR</button>
-        <button class="attach-btn" id="fileBtn"><i class="fas fa-paperclip"></i></button>
-        <input type="file" id="fileInput" accept="image/*" style="display: none;">
-
-        <input type="text" id="textInput" placeholder="Ask MVC AI" autocomplete="off">
-        
-        <button class="icon-btn" id="micBtn"><i class="fas fa-microphone"></i></button>
-        <button class="icon-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
-    </div>
-
-    <script>
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const chatContainer = document.getElementById('chat-container');
-        const textInput = document.getElementById('textInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const micBtn = document.getElementById('micBtn');
-        const langBtn = document.getElementById('langBtn');
-        const fileBtn = document.getElementById('fileBtn');
-        const fileInput = document.getElementById('fileInput');
-        const previewContainer = document.getElementById('preview-container');
-        const previewImage = document.getElementById('preview-image');
-        const removeFileBtn = document.getElementById('remove-file');
-
-        let isFirstMessage = true;
-        let currentLang = 'en-US';
-        let currentImageBase64 = null;
-
-        fileBtn.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    currentImageBase64 = event.target.result;
-                    previewImage.src = currentImageBase64;
-                    previewContainer.style.display = 'block';
-                    micBtn.style.display = 'none'; sendBtn.style.display = 'flex';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        removeFileBtn.addEventListener('click', () => {
-            currentImageBase64 = null;
-            fileInput.value = "";
-            previewContainer.style.display = 'none';
-            if (textInput.value.trim().length === 0) {
-                micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
-            }
-        });
-
-        langBtn.addEventListener('click', () => {
-            if (currentLang === 'en-US') {
-                currentLang = 'ar-SA'; langBtn.textContent = 'EN';
-                textInput.placeholder = "اسأل MVC AI..."; textInput.dir = "rtl";
-            } else {
-                currentLang = 'en-US'; langBtn.textContent = 'AR';
-                textInput.placeholder = "Ask MVC AI..."; textInput.dir = "ltr";
-            }
-        });
-
-        textInput.addEventListener('input', () => {
-            if (textInput.value.trim().length > 0 || currentImageBase64) {
-                micBtn.style.display = 'none'; sendBtn.style.display = 'flex';
-            } else {
-                micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
-            }
-        });
-
-        function hideWelcome() {
-            if (isFirstMessage) {
-                welcomeScreen.style.display = 'none';
-                chatContainer.style.display = 'flex';
-                isFirstMessage = false;
-            }
-        }
-
-        async function sendMessage(text) {
-            if (!text && !currentImageBase64) return;
-            hideWelcome();
-
-            const userDiv = document.createElement('div');
-            userDiv.classList.add('message', 'user-message');
-            userDiv.textContent = text;
-            if (currentImageBase64) {
-                const img = document.createElement('img');
-                img.src = currentImageBase64;
-                img.classList.add('chat-image');
-                userDiv.appendChild(img);
-            }
-            chatContainer.appendChild(userDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
-            const payload = { message: text, image: currentImageBase64, language: currentLang };
-
-            textInput.value = '';
-            currentImageBase64 = null;
-            previewContainer.style.display = 'none';
-            fileInput.value = '';
-            micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
-
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-                
-                const botDiv = document.createElement('div');
-                botDiv.classList.add('message', 'bot-message');
-                botDiv.innerHTML = marked.parse(data.reply);
-                chatContainer.appendChild(botDiv);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-
-                speak(data.reply);
-
-            } catch (error) {
-                const errDiv = document.createElement('div');
-                errDiv.classList.add('message', 'bot-message');
-                errDiv.textContent = "Error processing request.";
-                chatContainer.appendChild(errDiv);
-            }
-        }
-
-        sendBtn.addEventListener('click', () => sendMessage(textInput.value));
-        textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(textInput.value); });
-
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        
-        micBtn.addEventListener('click', () => {
-            recognition.lang = currentLang;
-            window.speechSynthesis.cancel();
-            if (micBtn.classList.contains('recording')) recognition.stop();
-            else recognition.start();
-        });
-
-        recognition.onstart = () => micBtn.style.color = '#ff4d4d';
-        recognition.onend = () => micBtn.style.color = 'white';
-        recognition.onresult = (e) => {
-            const transcript = e.results[0][0].transcript;
-            textInput.value = transcript;
-            sendMessage(transcript);
-        };
-
-        function speak(text) {
-            window.speechSynthesis.cancel(); 
-            const cleanText = text.replace(/[*#`_]/g, '');
-            const u = new SpeechSynthesisUtterance(cleanText);
-            u.lang = currentLang;
-            window.speechSynthesis.speak(u);
-        }
-    </script>
-</body>
-</html>
+            width: 40px; height: 40px; 
+            border-
  
