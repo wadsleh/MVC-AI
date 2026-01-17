@@ -4,18 +4,16 @@ require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
-console.log("My Key Status:", process.env.GEMINI_API_KEY ? "موجود" : "مفقود أو فارغ");
-
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// ⚠️ ضع مفتاحك هنا مباشرة بين علامات التنصيص
+const genAI = new GoogleGenerativeAI("AIzaSyBaOm0UcZHH86t9GmyJNKIIm8zzjwmZmd0");
 
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
-    // استخدام الموديل السريع
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
     
     const result = await model.generateContent(message);
@@ -24,9 +22,11 @@ app.post('/api/chat', async (req, res) => {
 
     res.json({ reply: text });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send('Error connecting to AI');
+    console.error("Error causing crash:", error); // طباعة الخطأ في السجلات
+    res.status(500).json({ error: "خطأ في الاتصال بالذكاء الاصطناعي" });
   }
 });
 
+const PORT = process.env.PORT || 3000;
+// الحل لمشكلة الشبكة: إضافة '0.0.0.0'
 app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
