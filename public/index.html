@@ -2,12 +2,11 @@
 <html lang="ar" dir="auto">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MVC AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- تصميم MVC AI الفاخر --- */
         body {
             background-color: #131314;
             color: #E3E3E3;
@@ -16,19 +15,17 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            /* منع السحب لأسفل في الموبايل */
+            overscroll-behavior: none;
         }
 
         header {
             padding: 15px;
             text-align: center;
-            background: #1E1F20;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            font-size: 1.3rem;
+            background: #131314; /* نفس لون الخلفية لدمج التصميم */
+            font-size: 1.2rem;
             font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
+            border-bottom: 1px solid #333;
         }
 
         .brand-name {
@@ -40,6 +37,7 @@
         #chat-container {
             flex: 1;
             padding: 20px;
+            padding-bottom: 120px; /* مساحة كبيرة عشان الشريط الطافي ما يغطي الكلام */
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -48,20 +46,11 @@
 
         .message {
             max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 18px;
+            padding: 12px 18px;
+            border-radius: 20px;
             line-height: 1.6;
             font-size: 1rem;
-            position: relative;
             word-wrap: break-word;
-        }
-        
-        /* صور داخل الشات */
-        .chat-image {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-            border: 1px solid #444;
         }
 
         .user-message {
@@ -78,29 +67,31 @@
             border-bottom-left-radius: 4px;
         }
 
-        /* --- منطقة الإدخال المطورة --- */
-        #input-area {
-            background-color: #1E1F20;
-            padding: 15px;
-            display: flex;
-            align-items: flex-end; /* لمحاذاة العناصر للأسفل */
-            gap: 10px;
-            border-top: 1px solid #333;
+        .chat-image {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 1px solid #444;
         }
 
-        /* حاوية النص والملف */
-        .input-wrapper {
-            flex: 1;
-            background-color: #2C2C2E;
-            border-radius: 25px;
-            padding: 5px 15px;
+        /* --- الشريط الطافي (مثل Gemini) --- */
+        #input-area {
+            position: fixed;
+            bottom: 20px; /* يرتفع عن الأسفل */
+            left: 15px;
+            right: 15px;
+            background-color: #1E1F20;
+            border-radius: 35px; /* تدوير كامل للحواف */
+            padding: 8px 15px; /* حشوة داخلية */
             display: flex;
             align-items: center;
             gap: 10px;
             border: 1px solid #444;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5); /* ظل لإبراز الشريط */
+            z-index: 1000;
         }
 
-        /* حقل النص */
+        /* حقل الكتابة */
         #textInput {
             flex: 1;
             background: transparent;
@@ -108,98 +99,67 @@
             color: white;
             font-family: inherit;
             font-size: 1rem;
-            padding: 10px 0;
+            padding: 10px 5px;
             outline: none;
-            resize: none; /* منع تغيير الحجم يدوياً */
-            max-height: 100px;
-            overflow-y: auto;
         }
 
-        /* زر المرفقات */
-        #fileBtn {
-            color: #aaa;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 5px;
-            transition: color 0.3s;
-        }
-        #fileBtn:hover { color: #fff; }
-
-        /* زر الإرسال */
-        #sendBtn {
+        /* الأزرار */
+        .icon-btn {
             background: transparent;
             border: none;
-            color: #4b90ff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0 5px;
-        }
-        
-        /* زر المايك */
-        #micBtn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            background: #303134;
-            color: white;
+            color: #aaa;
             font-size: 1.2rem;
             cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            width: 40px;
+            height: 40px;
         }
-        #micBtn.recording {
-            background-color: #ff5546;
+
+        .icon-btn:hover { background-color: #333; color: #fff; }
+        .icon-btn:active { transform: scale(0.9); }
+
+        #sendBtn { color: #4b90ff; }
+        #micBtn.recording { 
+            color: #ff5546; 
+            background-color: rgba(255, 85, 70, 0.2);
             animation: pulse 1.5s infinite;
         }
 
-        /* معاينة الملف قبل الإرسال */
+        /* معاينة الصور */
         #preview-container {
-            position: absolute;
-            bottom: 80px;
+            position: fixed;
+            bottom: 90px; /* فوق الشريط الطافي مباشرة */
             left: 20px;
             background: #2C2C2E;
-            padding: 10px;
-            border-radius: 10px;
-            display: none; /* مخفي افتراضياً */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            padding: 8px;
+            border-radius: 12px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 999;
         }
-        #preview-image {
-            max-width: 100px;
-            max-height: 100px;
-            border-radius: 5px;
-        }
+        #preview-image { max-width: 80px; max-height: 80px; border-radius: 8px; }
         #remove-file {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: red;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            line-height: 20px;
-            cursor: pointer;
-            font-size: 12px;
+            position: absolute; top: -8px; right: -8px;
+            background: #ff5546; color: white; border-radius: 50%;
+            width: 22px; height: 22px; text-align: center;
+            line-height: 22px; cursor: pointer; font-size: 14px;
+            border: 2px solid #2C2C2E;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 85, 70, 0.4); }
-            100% { box-shadow: 0 0 0 15px rgba(255, 85, 70, 0); }
-        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 85, 70, 0.4); } 100% { box-shadow: 0 0 0 10px rgba(255, 85, 70, 0); } }
     </style>
 </head>
 <body>
 
-    <header>
-        🤖 <span class="brand-name">MVC AI</span>
-    </header>
+    <header>✨ <span class="brand-name">MVC AI</span></header>
 
     <div id="chat-container">
-        <div class="message bot-message">مرحباً! أنا MVC AI. يمكنك الكتابة، التحدث، أو رفع صور لأحللها لك. 🚀</div>
+        <div class="message bot-message">مرحباً! التصميم الآن يشبه Gemini. جرب الكتابة أو التحدث! 🎙️</div>
     </div>
 
     <div id="preview-container">
@@ -208,20 +168,17 @@
     </div>
 
     <div id="input-area">
-        <button id="micBtn"><i class="fas fa-microphone"></i></button>
+        <button class="icon-btn" id="fileBtn"><i class="fas fa-plus"></i></button>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
 
-        <div class="input-wrapper">
-            <input type="file" id="fileInput" accept="image/*" style="display: none;">
-            <i class="fas fa-paperclip" id="fileBtn" title="إرفاق صورة"></i>
-            
-            <input type="text" id="textInput" placeholder="اكتب رسالتك هنا..." autocomplete="off">
-            
-            <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
-        </div>
+        <input type="text" id="textInput" placeholder="اكتب رسالتك..." autocomplete="off">
+
+        <button class="icon-btn" id="micBtn"><i class="fas fa-microphone"></i></button>
+        
+        <button class="icon-btn" id="sendBtn" style="display: none;"><i class="fas fa-paper-plane"></i></button>
     </div>
 
     <script>
-        // العناصر
         const chatContainer = document.getElementById('chat-container');
         const textInput = document.getElementById('textInput');
         const sendBtn = document.getElementById('sendBtn');
@@ -231,12 +188,21 @@
         const previewContainer = document.getElementById('preview-container');
         const previewImage = document.getElementById('preview-image');
         const removeFileBtn = document.getElementById('remove-file');
+        
+        let currentImageBase64 = null;
 
-        let currentImageBase64 = null; // لتخزين الصورة مؤقتاً
+        // تبديل بين المايك والإرسال حسب الكتابة
+        textInput.addEventListener('input', () => {
+            if (textInput.value.trim().length > 0) {
+                micBtn.style.display = 'none';
+                sendBtn.style.display = 'flex';
+            } else {
+                micBtn.style.display = 'flex';
+                sendBtn.style.display = 'none';
+            }
+        });
 
-        // --- 1. التعامل مع الملفات (الصور) ---
         fileBtn.addEventListener('click', () => fileInput.click());
-
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -244,7 +210,7 @@
                 reader.onload = (event) => {
                     currentImageBase64 = event.target.result;
                     previewImage.src = currentImageBase64;
-                    previewContainer.style.display = 'block'; // إظهار المعاينة
+                    previewContainer.style.display = 'block';
                 };
                 reader.readAsDataURL(file);
             }
@@ -256,23 +222,18 @@
             previewContainer.style.display = 'none';
         });
 
-        // --- 2. الإرسال (نص أو صورة) ---
         async function sendMessage(text) {
             if (!text && !currentImageBase64) return;
-
-            // إضافة رسالة المستخدم للشاشة
+            
             addMessage(text, 'user', currentImageBase64);
-
-            const payload = { message: text || "وصف هذه الصورة" };
-            if (currentImageBase64) {
-                payload.image = currentImageBase64;
-            }
-
-            // تنظيف الحقل
+            const payload = { message: text || "وصف الصورة", image: currentImageBase64 };
+            
             textInput.value = '';
             currentImageBase64 = null;
             previewContainer.style.display = 'none';
-            fileInput.value = "";
+            fileInput.value = '';
+            micBtn.style.display = 'flex'; // إعادة زر المايك
+            sendBtn.style.display = 'none';
 
             try {
                 const response = await fetch('/api/chat', {
@@ -280,82 +241,47 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
                 const data = await response.json();
                 addMessage(data.reply, 'bot');
                 speak(data.reply);
-
             } catch (error) {
-                addMessage("حدث خطأ في الاتصال بالسيرفر.", 'bot');
+                addMessage("حدث خطأ في الاتصال", 'bot');
             }
         }
 
         sendBtn.addEventListener('click', () => sendMessage(textInput.value));
-        textInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage(textInput.value);
-        });
-
-        // --- 3. التعامل مع الصوت (المايك) ---
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'ar-SA'; 
-
+        textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(textInput.value); });
+        
+        // إعدادات الصوت
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'ar-SA';
+        
         micBtn.addEventListener('click', () => {
-            window.speechSynthesis.cancel(); // إسكات البوت
-            if (micBtn.classList.contains('recording')) {
-                recognition.stop();
-            } else {
-                recognition.start();
-            }
+            window.speechSynthesis.cancel();
+            if (micBtn.classList.contains('recording')) recognition.stop();
+            else recognition.start();
         });
 
-        recognition.onstart = () => {
-            micBtn.classList.add('recording');
-            textInput.placeholder = "جاري الاستماع...";
-        };
+        recognition.onstart = () => { micBtn.classList.add('recording'); textInput.placeholder = "جاري الاستماع..."; };
+        recognition.onend = () => { micBtn.classList.remove('recording'); textInput.placeholder = "اكتب رسالتك..."; };
+        recognition.onresult = (e) => sendMessage(e.results[0][0].transcript);
 
-        recognition.onend = () => {
-            micBtn.classList.remove('recording');
-            textInput.placeholder = "اكتب رسالتك هنا...";
-        };
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            sendMessage(transcript);
-        };
-
-        // --- وظائف مساعدة ---
-        function addMessage(text, sender, imageUrl = null) {
+        function addMessage(text, sender, img) {
             const div = document.createElement('div');
             div.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-            
-            // إضافة النص
-            if (text) {
-                const p = document.createElement('p');
-                p.textContent = text;
-                p.style.margin = 0;
-                div.appendChild(p);
-            }
-
-            // إضافة الصورة إذا وجدت
-            if (imageUrl) {
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                img.classList.add('chat-image');
-                div.appendChild(img);
-            }
-
+            if (text) { const p = document.createElement('p'); p.textContent = text; p.style.margin=0; div.appendChild(p); }
+            if (img) { const i = document.createElement('img'); i.src = img; i.classList.add('chat-image'); div.appendChild(i); }
             chatContainer.appendChild(div);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         function speak(text) {
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            const isArabic = /[\u0600-\u06FF]/.test(text);
-            utterance.lang = isArabic ? 'ar-SA' : 'en-US';
-            window.speechSynthesis.speak(utterance);
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = /[\u0600-\u06FF]/.test(text) ? 'ar-SA' : 'en-US';
+            window.speechSynthesis.speak(u);
         }
     </script>
 </body>
 </html>
+ 
