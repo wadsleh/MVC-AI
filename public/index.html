@@ -30,7 +30,7 @@
 
         /* --- الهيدر --- */
         header {
-            padding: 15px 15px; /* هوامش مريحة */
+            padding: 15px 15px; 
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -39,35 +39,24 @@
         .brand-container { display: flex; align-items: center; gap: 8px; }
 
         .app-logo { 
-            height: 45px; 
-            width: auto; 
-            max-width: 150px; 
-            object-fit: contain; 
-            display: block; 
+            height: 45px; width: auto; max-width: 150px; 
+            object-fit: contain; display: block; 
         }
 
         .brand-name { font-size: 1.2rem; font-weight: 600; color: #E3E3E3; letter-spacing: 0.5px; }
 
-        /* حاوية عناصر اليمين في الهيدر (اللغة + الأفاتار) */
+        /* حاوية عناصر اليمين (زر اللغة + الأفاتار) */
         .header-right {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* زر اللغة في الهيدر */
+        /* زر اللغة */
         #langBtn {
-            background: #1E1F20; 
-            color: #E3E3E3; 
-            border: 1px solid #333; 
-            padding: 5px 12px;
-            border-radius: 15px; 
-            font-size: 0.85rem; 
-            font-weight: bold; 
-            cursor: pointer;
-            min-width: 40px; 
-            text-align: center;
-            transition: 0.2s;
+            background: #1E1F20; color: #E3E3E3; border: 1px solid #333; padding: 5px 12px;
+            border-radius: 15px; font-size: 0.85rem; font-weight: bold; cursor: pointer;
+            min-width: 40px; text-align: center; transition: 0.2s;
         }
         #langBtn:hover { background: #333; }
 
@@ -77,12 +66,13 @@
             font-size: 0.9rem; font-weight: bold; color: #3E2723;
         }
 
-        /* --- شاشة الترحيب --- */
-        #welcome-screen {
-            flex: 1; display: flex; flex-direction: column; justify-content: center;
-            padding: 20px; padding-bottom: 120px;
+        /* --- الشات --- */
+        #chat-container {
+            flex: 1; padding: 20px; padding-bottom: 140px; 
+            overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
         }
 
+        .welcome-message { margin-top: 50px; padding: 20px; text-align: left; }
         .greeting-hi { font-size: 3.5rem; font-weight: 500; color: white; line-height: 1.1; }
         .greeting-name {
             font-size: 3.5rem; font-weight: 500;
@@ -109,20 +99,40 @@
         .icon-green { color: #34A853; }
         .icon-red { color: #EA4335; }
 
-        /* --- الشات --- */
-        #chat-container {
-            flex: 1; padding: 20px; padding-bottom: 140px; 
-            overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
-        }
-
-        .welcome-message { margin-top: 50px; padding: 20px; text-align: left; }
         .message { max-width: 90%; line-height: 1.6; font-size: 1rem; position: relative; }
+        
         .user-message {
             align-self: flex-end; background-color: #282A2C; color: white;
             padding: 12px 20px; border-radius: 20px 20px 20px 4px;
         }
+
+        /* حاوية رسالة البوت (تحتوي على زر الصوت والنص) */
+        .bot-message-container {
+            align-self: flex-start;
+            display: flex;
+            flex-direction: column; /* زر الصوت فوق النص */
+            align-items: flex-start;
+            gap: 5px;
+            max-width: 90%;
+        }
+
+        /* زر تشغيل الصوت فوق الرسالة */
+        .msg-speaker-btn {
+            background: transparent;
+            border: none;
+            color: #C4C7C5;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+            display: flex; align-items: center; gap: 5px;
+            transition: 0.2s;
+            margin-left: 10px; /* محاذاة بسيطة */
+        }
+        .msg-speaker-btn:hover { color: #fff; }
+        .msg-speaker-btn.playing { color: #A8C7FA; }
+
         .bot-message {
-            align-self: flex-start; background: transparent; color: #E3E3E3;
+            background: transparent; color: #E3E3E3;
             padding: 0; padding-left: 15px;
         }
         .bot-message::before { content: '✨'; display: inline-block; margin-left: 8px; }
@@ -145,19 +155,17 @@
             cursor: pointer; font-size: 14px; border: 2px solid #2C2C2E;
         }
 
-        /* --- شريط الإدخال (تم تنظيفه) --- */
+        /* --- شريط الإدخال --- */
         #input-area {
             position: fixed; bottom: 20px; left: 15px; right: 15px;
             background-color: #1E1F20; border-radius: 35px;
-            
-            /* حشو متوازن الآن لأننا أزلنا زر اللغة */
-            padding: 8px 15px; 
-            
+            padding: 10px 25px 10px 15px; 
             display: flex; align-items: center; gap: 8px; z-index: 1000;
             min-height: 60px;
         }
+        @media (max-width: 480px) { #input-area { padding-right: 25px; } }
 
-        /* زر الرفع (أقصى اليسار) */
+        /* زر الرفع */
         .attach-btn {
             background: transparent; border: none; color: #C4C7C5; 
             font-size: 1.3rem; cursor: pointer; padding: 8px;
@@ -167,7 +175,7 @@
 
         #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1.1rem; padding: 5px 10px; outline: none; }
         
-        /* مجموعة اليمين (المايك فقط الآن) */
+        /* مجموعة اليمين */
         .right-controls { display: flex; align-items: center; gap: 5px; }
 
         .icon-btn { 
@@ -209,13 +217,13 @@
             <div class="greeting-sub">Where should we start?</div>
             
             <div class="suggestions">
-                <div class="chip" onclick="sendMessage('Create a creative image description')">
+                <div class="chip" onclick="sendMessage('Create a creative image description', false)">
                     <i class="fas fa-image icon-yellow"></i> Create image
                 </div>
-                <div class="chip" onclick="sendMessage('Write a creative story')">
+                <div class="chip" onclick="sendMessage('Write a creative story', false)">
                     <i class="fas fa-file-alt icon-green"></i> Write anything
                 </div>
-                <div class="chip" onclick="sendMessage('Help me learn something new')">
+                <div class="chip" onclick="sendMessage('Help me learn something new', false)">
                     <i class="fas fa-book icon-red"></i> Help me learn
                 </div>
             </div>
@@ -263,8 +271,8 @@
         let currentFileContent = null;
         let currentFileName = null;
 
+        // --- إدارة الملفات ---
         fileBtn.addEventListener('click', () => fileInput.click());
-
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -302,9 +310,7 @@
         }
 
         removeFileBtn.addEventListener('click', () => {
-            currentImageBase64 = null;
-            currentFileContent = null;
-            fileInput.value = "";
+            currentImageBase64 = null; currentFileContent = null; fileInput.value = "";
             previewContainer.style.display = 'none';
             if (textInput.value.trim().length === 0) {
                 micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
@@ -336,7 +342,8 @@
             }
         }
 
-        async function sendMessage(text) {
+        // ✅ تعديل: إضافة زر الصوت فوق كل رسالة
+        async function sendMessage(text, fromVoice = false) {
             if (!text && !currentImageBase64 && !currentFileContent) return;
             hideWelcome();
 
@@ -362,10 +369,8 @@
             const payload = { message: finalMessage, image: currentImageBase64, language: currentLang };
 
             textInput.value = '';
-            currentImageBase64 = null;
-            currentFileContent = null;
-            previewContainer.style.display = 'none';
-            fileInput.value = '';
+            currentImageBase64 = null; currentFileContent = null;
+            previewContainer.style.display = 'none'; fileInput.value = '';
             micBtn.style.display = 'flex'; sendBtn.style.display = 'none';
 
             try {
@@ -376,13 +381,31 @@
                 });
                 const data = await response.json();
                 
+                // ✅ إنشاء حاوية الرسالة وزر الصوت
+                const botContainer = document.createElement('div');
+                botContainer.classList.add('bot-message-container');
+
+                // 1. زر السماعة (فوق الرسالة طوالي)
+                const speakerBtn = document.createElement('button');
+                speakerBtn.innerHTML = '<i class="fas fa-volume-high"></i>';
+                speakerBtn.classList.add('msg-speaker-btn');
+                speakerBtn.onclick = () => speak(data.reply); // عند الضغط يقرأ هذا النص
+                botContainer.appendChild(speakerBtn);
+
+                // 2. نص الرسالة
                 const botDiv = document.createElement('div');
                 botDiv.classList.add('message', 'bot-message');
                 botDiv.innerHTML = marked.parse(data.reply);
-                chatContainer.appendChild(botDiv);
+                botContainer.appendChild(botDiv);
+
+                chatContainer.appendChild(botContainer);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
 
-                speak(data.reply);
+                // ✅ المنطق: إذا كان إدخال صوتي -> شغل الصوت تلقائياً
+                if (fromVoice) {
+                    speak(data.reply);
+                    speakerBtn.classList.add('playing'); // تغيير لون الزر ليدل على التشغيل
+                }
 
             } catch (error) {
                 const errDiv = document.createElement('div');
@@ -392,8 +415,8 @@
             }
         }
 
-        sendBtn.addEventListener('click', () => sendMessage(textInput.value));
-        textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(textInput.value); });
+        sendBtn.addEventListener('click', () => sendMessage(textInput.value, false));
+        textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(textInput.value, false); });
 
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         
@@ -406,10 +429,11 @@
 
         recognition.onstart = () => micBtn.classList.add('recording');
         recognition.onend = () => micBtn.classList.remove('recording');
+        
         recognition.onresult = (e) => {
             const transcript = e.results[0][0].transcript;
             textInput.value = transcript;
-            sendMessage(transcript);
+            sendMessage(transcript, true); // إرسال صوتي -> تشغيل تلقائي
         };
 
         function speak(text) {
