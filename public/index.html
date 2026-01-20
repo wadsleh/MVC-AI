@@ -45,14 +45,12 @@
 
         .brand-name { font-size: 1.2rem; font-weight: 600; color: #E3E3E3; letter-spacing: 0.5px; }
 
-        /* حاوية عناصر اليمين (زر اللغة + الأفاتار) */
         .header-right {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* زر اللغة */
         #langBtn {
             background: #1E1F20; color: #E3E3E3; border: 1px solid #333; padding: 5px 12px;
             border-radius: 15px; font-size: 0.85rem; font-weight: bold; cursor: pointer;
@@ -100,23 +98,20 @@
         .icon-red { color: #EA4335; }
 
         .message { max-width: 90%; line-height: 1.6; font-size: 1rem; position: relative; }
-        
         .user-message {
             align-self: flex-end; background-color: #282A2C; color: white;
             padding: 12px 20px; border-radius: 20px 20px 20px 4px;
         }
 
-        /* حاوية رسالة البوت (تحتوي على زر الصوت والنص) */
         .bot-message-container {
             align-self: flex-start;
             display: flex;
-            flex-direction: column; /* زر الصوت فوق النص */
+            flex-direction: column;
             align-items: flex-start;
             gap: 5px;
             max-width: 90%;
         }
 
-        /* زر تشغيل الصوت فوق الرسالة */
         .msg-speaker-btn {
             background: transparent;
             border: none;
@@ -126,7 +121,7 @@
             padding: 5px;
             display: flex; align-items: center; gap: 5px;
             transition: 0.2s;
-            margin-left: 10px; /* محاذاة بسيطة */
+            margin-left: 10px;
         }
         .msg-speaker-btn:hover { color: #fff; }
         .msg-speaker-btn.playing { color: #A8C7FA; }
@@ -159,13 +154,12 @@
         #input-area {
             position: fixed; bottom: 20px; left: 15px; right: 15px;
             background-color: #1E1F20; border-radius: 35px;
-            padding: 10px 25px 10px 15px; 
+            padding: 8px 15px; 
             display: flex; align-items: center; gap: 8px; z-index: 1000;
             min-height: 60px;
         }
         @media (max-width: 480px) { #input-area { padding-right: 25px; } }
 
-        /* زر الرفع */
         .attach-btn {
             background: transparent; border: none; color: #C4C7C5; 
             font-size: 1.3rem; cursor: pointer; padding: 8px;
@@ -175,7 +169,6 @@
 
         #textInput { flex: 1; background: transparent; border: none; color: white; font-size: 1.1rem; padding: 5px 10px; outline: none; }
         
-        /* مجموعة اليمين */
         .right-controls { display: flex; align-items: center; gap: 5px; }
 
         .icon-btn { 
@@ -186,8 +179,7 @@
         }
         
         #micBtn { 
-            background: transparent; 
-            width: 48px; height: 48px; 
+            background: transparent; width: 48px; height: 48px; 
             justify-content: center;
         }
         #micBtn:active { background: rgba(255,255,255,0.1); }
@@ -258,7 +250,6 @@
         const langBtn = document.getElementById('langBtn');
         const fileBtn = document.getElementById('fileBtn');
         const fileInput = document.getElementById('fileInput');
-        
         const previewContainer = document.getElementById('preview-container');
         const previewImage = document.getElementById('preview-image');
         const fileIcon = document.getElementById('file-icon');
@@ -270,6 +261,11 @@
         let currentImageBase64 = null;
         let currentFileContent = null;
         let currentFileName = null;
+
+        // ✅ إصلاح المشكلة: إيقاف الصوت فوراً عند تحديث أو إغلاق الصفحة
+        window.addEventListener('beforeunload', () => {
+            window.speechSynthesis.cancel();
+        });
 
         // --- إدارة الملفات ---
         fileBtn.addEventListener('click', () => fileInput.click());
@@ -342,7 +338,6 @@
             }
         }
 
-        // ✅ تعديل: إضافة زر الصوت فوق كل رسالة
         async function sendMessage(text, fromVoice = false) {
             if (!text && !currentImageBase64 && !currentFileContent) return;
             hideWelcome();
@@ -381,18 +376,15 @@
                 });
                 const data = await response.json();
                 
-                // ✅ إنشاء حاوية الرسالة وزر الصوت
                 const botContainer = document.createElement('div');
                 botContainer.classList.add('bot-message-container');
 
-                // 1. زر السماعة (فوق الرسالة طوالي)
                 const speakerBtn = document.createElement('button');
                 speakerBtn.innerHTML = '<i class="fas fa-volume-high"></i>';
                 speakerBtn.classList.add('msg-speaker-btn');
-                speakerBtn.onclick = () => speak(data.reply); // عند الضغط يقرأ هذا النص
+                speakerBtn.onclick = () => speak(data.reply); 
                 botContainer.appendChild(speakerBtn);
 
-                // 2. نص الرسالة
                 const botDiv = document.createElement('div');
                 botDiv.classList.add('message', 'bot-message');
                 botDiv.innerHTML = marked.parse(data.reply);
@@ -401,10 +393,9 @@
                 chatContainer.appendChild(botContainer);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
 
-                // ✅ المنطق: إذا كان إدخال صوتي -> شغل الصوت تلقائياً
                 if (fromVoice) {
                     speak(data.reply);
-                    speakerBtn.classList.add('playing'); // تغيير لون الزر ليدل على التشغيل
+                    speakerBtn.classList.add('playing');
                 }
 
             } catch (error) {
@@ -433,7 +424,7 @@
         recognition.onresult = (e) => {
             const transcript = e.results[0][0].transcript;
             textInput.value = transcript;
-            sendMessage(transcript, true); // إرسال صوتي -> تشغيل تلقائي
+            sendMessage(transcript, true);
         };
 
         function speak(text) {
@@ -446,3 +437,4 @@
     </script>
 </body>
 </html>
+ 
